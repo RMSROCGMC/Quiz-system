@@ -48,10 +48,9 @@
             <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: 101)">
             <div id="status-msg" style="font-weight:bold; color:var(--secondary); margin-top:5px;">等待遠端連線...</div>
         </div>
-        
         <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取數據</button>
         
-        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (文字檔)</button>
+        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (修正亂碼版)</button>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
             <button class="main-btn" style="background:var(--primary); font-size:0.9em;" onclick="openLeaderboard()">🏆 排行榜</button>
@@ -60,7 +59,7 @@
     </div>
 
     <div id="list-screen" class="hidden">
-        <h3 id="list-title">排行榜</h3>
+        <h3 id="list-title">列表</h3>
         <div id="list-content" class="list-box"></div>
         <button class="main-btn" style="background:#95a5a6;" onclick="backToMain()">返回主選單</button>
     </div>
@@ -109,7 +108,6 @@
         document.getElementById('login-screen').classList.remove('hidden');
     }
 
-    // 搜尋與代碼連線邏輯
     document.getElementById('user-name').addEventListener('input', (e) => {
         if (e.target.value === 'admin990420') {
             isAdmin = true;
@@ -149,8 +147,6 @@
                     document.getElementById('start-btn').disabled = false;
                     document.getElementById('start-btn').style.background = "var(--success)";
                     document.getElementById('start-btn').innerText = "進入數據庫測驗";
-                    
-                    // 連線成功後顯示下載按鈕
                     document.getElementById('download-btn').style.display = "block";
                 }
             };
@@ -158,37 +154,28 @@
         }
     });
 
-    // 下載題庫功能
+    // 下載功能：加入 \ufeff 解決亂碼問題
     function downloadQuiz() {
         if(!window.currentQuiz) return;
-        
-        let content = `題庫名稱：${window.currentQuiz.name}\n`;
-        content += `產出時間：${new Date().toLocaleString()}\n`;
-        content += `------------------------------------------\n\n`;
-        
+        let content = `題庫名稱：${window.currentQuiz.name}\n產出時間：${new Date().toLocaleString()}\n------------------------------------------\n\n`;
         window.currentQuiz.data.forEach((item, index) => {
-            content += `${index + 1}. ${item.q}\n`;
-            item.o.forEach(opt => content += `   ${opt}\n`);
-            content += `   答案：(${item.a})\n\n`;
+            content += `${index + 1}. ${item.q}\n${item.o.join('\n')}\n答案：(${item.a})\n\n`;
         });
-        
-        const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+        const blob = new Blob(["\ufeff" + content], { type: "text/plain;charset=utf-8" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `${window.currentQuiz.name}_題庫內容.txt`;
+        a.download = `${window.currentQuiz.name}_題庫.txt`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
     }
 
-    // --- 測驗核心邏輯 (與先前版本一致) ---
-
     function checkAndStart() {
         const userName = document.getElementById('user-name').value.trim();
-        if(!userName) return alert("⚠️ 系統提示：請先輸入姓名才能開始測驗！");
-        alert("⚠️ 系統提示：按下確認後將進入全螢幕並開始計時，中途離開超過1次將強制交卷！");
+        if(!userName) return alert("⚠️ 系統提示：請先輸入姓名！");
+        alert("⚠️ 系統提示：按下確認後開始計時，中途離開超過1次將自動交卷！");
         if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
         isRetry = false;
         beginQuiz();
@@ -203,6 +190,7 @@
         currentQuestions = applyMode(window.currentQuiz.mode, raw);
         userAnswers = {};
         
+        // 讀取題庫 time 屬性
         const setTime = window.currentQuiz.time;
         totalSeconds = setTime ? setTime * 60 : currentQuestions.length * 1.5 * 60;
         
@@ -277,7 +265,7 @@
         currentQuestions.forEach((q, i) => {
             const isRight = userAnswers[i] === q.a;
             if(isRight) correctCount++; else wrongs.push(q);
-            reviewHTML += `<div class="review-card" style="border-left: 5px solid ${isRight?'var(--success)':'var(--error)'}; padding-left:10px; margin-bottom:15px;">
+            reviewHTML += `<div class="review-card" style="border-left: 5px solid ${isRight?'var(--success)':'var(--error)'}">
                 <p><b>Q${i+1}: ${q.q}</b></p>
                 <p style="color:${isRight?'green':'red'}">${isRight?'✅ 正確':'❌ 錯誤'}</p>
                 <p>您的答案：${userAnswers[i]||'未填'} / 正確答案：${q.a}</p>
@@ -326,11 +314,11 @@
     function openLeaderboard() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "🏆 請選擇代碼查看排名";
+        document.getElementById('list-title').innerText = "🏆 排行榜";
         let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
         let codes = [...new Set(logs.map(l => l.code))];
         let h = '';
-        codes.forEach(c => h += `<div class="res-item" onclick="showRank('${c}')">📈 點此查看 [${c}] 排名</div>`);
+        codes.forEach(c => h += `<div class="res-item" onclick="showRank('${c}')">📈 查看 [${c}] 排名</div>`);
         document.getElementById('list-content').innerHTML = h || '目前無紀錄';
     }
 
