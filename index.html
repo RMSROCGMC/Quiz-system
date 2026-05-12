@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>題測系統 Pro (Admin 增強版)</title>
+    <title>題測系統</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; user-select: none; }
@@ -34,7 +34,7 @@
         <h2>🛡️ 數據採集授權告知</h2>
         <div style="text-align:left; background:#f9f9f9; padding:15px; border:1px solid #ddd; height:180px; overflow-y:auto; margin-bottom:20px; font-size:0.9em; line-height:1.6;">
             本系統為「後方數據庫」測驗平台。當您開始測驗時，系統將自動搜集您的：姓名、測驗代碼、測驗成績及作答時間。
-            所有數據將即時上傳至 Google 試算表後端。點擊下方按鈕即代表您已閱讀並同意以上條款。
+            所有數據將即時上傳至雲端試算表後端。點擊下方按鈕即代表您已閱讀並同意以上條款。
         </div>
         <button class="main-btn" style="background:var(--primary);" onclick="agreeTerms()">同意並進入系統</button>
     </div>
@@ -47,11 +47,11 @@
         </div>
         <div class="input-group">
             <input type="text" id="user-name" class="code-input" placeholder="請輸入姓名" required>
-            <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: 101)">
+            <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: ND-1140202-E102)">
             <div id="status-msg" style="font-weight:bold; color:var(--secondary); margin-top:5px;">等待遠端連線...</div>
         </div>
-        <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取數據</button>
-        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (UTF-8 修正版)</button>
+        <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取題庫數據</button>
+        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫</button>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
             <button class="main-btn" style="background:var(--primary); font-size:0.9em;" onclick="openLeaderboard()">🏆 排行榜</button>
@@ -150,7 +150,7 @@
                     document.getElementById('status-msg').innerText = `✅ 已連線：${window.currentQuiz.name}`;
                     document.getElementById('start-btn').disabled = false;
                     document.getElementById('start-btn').style.background = "var(--success)";
-                    document.getElementById('start-btn').innerText = "進入數據庫測驗";
+                    document.getElementById('start-btn').innerText = "進入測驗";
                     document.getElementById('download-btn').style.display = "block";
                 }
             };
@@ -177,8 +177,8 @@
 
     function checkAndStart() {
         const userName = document.getElementById('user-name').value.trim();
-        if(!userName) return alert("⚠️ 系統提示：請先輸入姓名！");
-        alert("⚠️ 系統提示：按下確認後開始計時，中途離開超過1次將自動交卷！");
+        if(!userName) return alert("系統提示：請先輸入姓名！");
+        alert("⚠️ 系統提示：按下確認後開始計時，中途離開超過1次將自動交卷，請不要試圖挑戰開發者的權威！");
         if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
         isRetry = false;
         beginQuiz();
