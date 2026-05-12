@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>題測系統</title>
+    <title>題測系統 Pro (Admin 增強版)</title>
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; user-select: none; }
@@ -12,8 +12,8 @@
         .code-input { width: 90%; padding: 12px; font-size: 1.1em; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
         .main-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; color: white; font-weight: bold; transition: 0.3s; margin-top: 10px; }
         .search-area { background: #f8f9fa; padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #bbb; }
-        #search-results, .list-box { text-align: left; max-height: 200px; overflow-y: auto; background: white; margin-top: 5px; border: 1px solid #eee; }
-        .res-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 0.95em; }
+        #search-results, .list-box { text-align: left; max-height: 250px; overflow-y: auto; background: white; margin-top: 5px; border: 1px solid #eee; }
+        .res-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 0.95em; display: flex; justify-content: space-between; align-items: center; }
         .hidden { display: none; }
         .question-card { text-align: left; padding: 15px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; background: #fff; }
         .opt-btn { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; background: #fff; text-align: left; cursor: pointer; }
@@ -23,6 +23,8 @@
         th { background-color: var(--primary); color: white; }
         .review-card { text-align: left; border-left: 5px solid #eee; padding-left: 10px; margin-bottom: 15px; }
         #timer-box { font-size: 1.1em; color: var(--error); font-weight: bold; background: #fff0f0; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--error); }
+        .pass-line { background: #ffeded; color: #e74c3c; font-weight: bold; font-size: 0.85em; }
+        .del-btn { background: #ff4d4d; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em; }
     </style>
 </head>
 <body>
@@ -49,7 +51,6 @@
             <div id="status-msg" style="font-weight:bold; color:var(--secondary); margin-top:5px;">等待遠端連線...</div>
         </div>
         <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取數據</button>
-        
         <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (UTF-8 修正版)</button>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
@@ -77,10 +78,13 @@
     <div id="result-screen" class="hidden">
         <h2 id="res-type">測驗結算報告</h2>
         <h1 id="final-score" style="font-size: 3.5em; color:var(--secondary); margin:10px 0;">0</h1>
-        <div id="admin-tools" class="hidden">
-            <input type="number" id="admin-fix-input" placeholder="修改分數" style="width:100px; padding:8px;">
-            <button onclick="adminFix()">套用</button>
+        
+        <div id="admin-tools" class="hidden" style="margin-bottom: 15px; background: #fffbe6; padding: 10px; border-radius: 8px; border: 1px solid #ffe58f;">
+            <label style="font-weight: bold;">管理員修正：</label>
+            <input type="number" id="admin-fix-input" placeholder="新分數" style="width:80px; padding:8px; border-radius: 5px; border: 1px solid #ccc;">
+            <button onclick="adminFix()" style="background: #faad14; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">套用並更新紀錄</button>
         </div>
+
         <p id="pass-status" style="font-size:1.2em; font-weight:bold;"></p>
         <div style="display:flex; gap:10px;">
             <button class="main-btn" style="background:#95a5a6;" onclick="location.reload()">回首頁</button>
@@ -124,7 +128,7 @@
         window.allQuizzes.filter(q => q.name.includes(key)).forEach(q => {
             const d = document.createElement('div');
             d.className = 'res-item';
-            d.innerHTML = `📌 ${q.name} (${q.code})`;
+            d.innerHTML = `<span>📌 ${q.name} (${q.code})</span>`;
             d.onclick = () => {
                 document.getElementById('quiz-code').value = q.code;
                 document.getElementById('search-input').value = q.name;
@@ -154,7 +158,6 @@
         }
     });
 
-    // 解決下載亂碼問題：加上 BOM (\ufeff)
     function downloadQuiz() {
         if(!window.currentQuiz) return;
         let content = `題庫名稱：${window.currentQuiz.name}\n產出時間：${new Date().toLocaleString()}\n------------------------------------------\n\n`;
@@ -184,34 +187,20 @@
     function beginQuiz() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('quiz-ui').classList.remove('hidden');
-        
         const quiz = window.currentQuiz;
         document.getElementById('quiz-header').innerText = quiz.name;
-        
         let raw = isRetry ? wrongs : quiz.data;
         currentQuestions = applyMode(quiz.mode, raw);
         userAnswers = {};
-        
-        // 核心修正：強制檢查題庫檔內的 time 設定
-        if (quiz.time && quiz.time > 0) {
-            totalSeconds = quiz.time * 60;
-        } else {
-            // 如果沒設定 time，才使用題數計算 (每題 1.5 分鐘)
-            totalSeconds = currentQuestions.length * 1.5 * 60;
-        }
-        
+        if (quiz.time && quiz.time > 0) totalSeconds = quiz.time * 60;
+        else totalSeconds = currentQuestions.length * 1.5 * 60;
         updateTimerDisplay();
         clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             totalSeconds--;
             updateTimerDisplay();
-            if (totalSeconds <= 0) {
-                clearInterval(timerInterval);
-                alert("⏰ 時間到！系統自動交卷！");
-                evalQuiz();
-            }
+            if (totalSeconds <= 0) { clearInterval(timerInterval); evalQuiz(); }
         }, 1000);
-
         quizActive = true;
         renderQuiz();
     }
@@ -278,19 +267,35 @@
             </div>`;
         });
         const score = Math.round(correctCount * perValue);
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('pass-status').innerText = score >= 60 ? "🎉 及格" : "❌ 不及格";
-        document.getElementById('pass-status').style.color = score >= 60 ? "green" : "red";
-        document.getElementById('review-area').innerHTML = reviewHTML;
+        updateScoreUI(score);
         if (isAdmin) document.getElementById('admin-tools').classList.remove('hidden');
         if (!isRetry) { sendCloud(score); logLocal(score); }
         document.getElementById('retry-btn').style.display = (wrongs.length > 0) ? 'block' : 'none';
+        document.getElementById('review-area').innerHTML = reviewHTML;
     }
 
+    // 統一更新成績介面邏輯
+    function updateScoreUI(s) {
+        document.getElementById('final-score').innerText = s;
+        const status = document.getElementById('pass-status');
+        if (s >= 60) {
+            status.innerText = "🎉 及格";
+            status.style.color = "green";
+        } else {
+            status.innerText = "❌ 不及格";
+            status.style.color = "red";
+        }
+    }
+
+    // 管理員修正核心：更新介面、判定、同步紀錄與雲端
     function adminFix() {
-        const val = document.getElementById('admin-fix-input').value;
-        document.getElementById('final-score').innerText = val;
-        alert("管理員已修正為 " + val);
+        const val = parseInt(document.getElementById('admin-fix-input').value);
+        if (isNaN(val)) return alert("請輸入有效的數字分數！");
+        
+        updateScoreUI(val); // 更新及格狀態
+        logLocal(val);       // 更新本地紀錄 (覆蓋舊分)
+        sendCloud(val);     // 重新同步雲端
+        alert("管理員已將成績修正為 " + val + " 分，並已同步更新所有紀錄。");
     }
 
     function sendCloud(s) {
@@ -302,17 +307,29 @@
     }
 
     function logLocal(s) {
-        let history = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        history.push({ user: document.getElementById('user-name').value, code: document.getElementById('quiz-code').value, title: window.currentQuiz.name, score: s, time: new Date().toLocaleString() });
-        localStorage.setItem('qz_logs', JSON.stringify(history));
+        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
+        const name = document.getElementById('user-name').value;
+        const code = document.getElementById('quiz-code').value;
+        const existingIdx = logs.findIndex(l => l.user === name && l.code === code);
+        
+        if (existingIdx !== -1) {
+            // 管理員修改時強行覆蓋，正常測驗則取最高分
+            if (isAdmin || s > logs[existingIdx].score) {
+                logs[existingIdx].score = s;
+                logs[existingIdx].time = new Date().toLocaleString();
+            }
+        } else {
+            logs.push({ user: name, code: code, title: window.currentQuiz.name, score: s, time: new Date().toLocaleString() });
+        }
+        localStorage.setItem('qz_logs', JSON.stringify(logs));
     }
 
     function openHistory() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "📖 本地答題紀錄";
+        document.getElementById('list-title').innerText = "📖 答題紀錄";
         let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        let h = '<table><tr><th>時間</th><th>測驗項目</th><th>成績</th></tr>';
+        let h = '<table><tr><th>時間</th><th>項</th><th>分</th></tr>';
         logs.reverse().forEach(l => h += `<tr><td>${l.time}</td><td>${l.title}</td><td>${l.score}</td></tr>`);
         document.getElementById('list-content').innerHTML = h + '</table>';
     }
@@ -320,20 +337,39 @@
     function openLeaderboard() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "🏆 排行榜";
+        document.getElementById('list-title').innerText = "🏆 排行榜 (點選題庫)";
         let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
         let codes = [...new Set(logs.map(l => l.code))];
         let h = '';
-        codes.forEach(c => h += `<div class="res-item" onclick="showRank('${c}')">📈 查看 [${c}] 排名</div>`);
+        codes.forEach(c => {
+            const title = logs.find(l => l.code === c).title;
+            h += `<div class="res-item" onclick="showRank('${c}')"><span>📈 ${title} (${c})</span></div>`;
+        });
         document.getElementById('list-content').innerHTML = h || '目前無紀錄';
     }
 
     function showRank(c) {
         let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
         let filtered = logs.filter(l => l.code === c).sort((a,b) => b.score - a.score);
-        let h = `<h4>代碼 ${c} 排名表</h4><table><tr><th>排名</th><th>姓名</th><th>成績</th></tr>`;
-        filtered.forEach((l, i) => h += `<tr><td>${i+1}</td><td>${l.user}</td><td>${l.score}</td></tr>`);
+        let h = `<h4>${filtered[0].title} 排名</h4><table><tr><th>名次</th><th>姓名</th><th>成績</th>${isAdmin?'<th>管理</th>':''}</tr>`;
+        let passLineShown = false;
+        filtered.forEach((l, i) => {
+            if (!passLineShown && l.score < 60) {
+                h += `<tr class="pass-line"><td colspan="${isAdmin?4:3}">--- 以上及格 / 以下不及格 ---</td></tr>`;
+                passLineShown = true;
+            }
+            h += `<tr><td>${i+1}</td><td>${l.user}</td><td>${l.score}</td>
+                  ${isAdmin ? `<td><button class="del-btn" onclick="adminDelete('${l.user}', '${l.code}')">🗑️</button></td>` : ''}</tr>`;
+        });
         document.getElementById('list-content').innerHTML = h + '</table>';
+    }
+
+    function adminDelete(user, code) {
+        if (!confirm(`確定要刪除 ${user} 的這筆紀錄嗎？`)) return;
+        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
+        logs = logs.filter(l => !(l.user === user && l.code === code));
+        localStorage.setItem('qz_logs', JSON.stringify(logs));
+        showRank(code);
     }
 
     function startRetry() { isRetry = true; document.getElementById('result-screen').classList.add('hidden'); beginQuiz(); }
