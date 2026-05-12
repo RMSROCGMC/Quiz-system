@@ -50,7 +50,7 @@
         </div>
         <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取數據</button>
         
-        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (修正亂碼版)</button>
+        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (UTF-8 修正版)</button>
 
         <div style="display:flex; gap:10px; margin-top:10px;">
             <button class="main-btn" style="background:var(--primary); font-size:0.9em;" onclick="openLeaderboard()">🏆 排行榜</button>
@@ -59,7 +59,7 @@
     </div>
 
     <div id="list-screen" class="hidden">
-        <h3 id="list-title">列表</h3>
+        <h3 id="list-title">數據列表</h3>
         <div id="list-content" class="list-box"></div>
         <button class="main-btn" style="background:#95a5a6;" onclick="backToMain()">返回主選單</button>
     </div>
@@ -154,7 +154,7 @@
         }
     });
 
-    // 下載功能：加入 \ufeff 解決亂碼問題
+    // 解決下載亂碼問題：加上 BOM (\ufeff)
     function downloadQuiz() {
         if(!window.currentQuiz) return;
         let content = `題庫名稱：${window.currentQuiz.name}\n產出時間：${new Date().toLocaleString()}\n------------------------------------------\n\n`;
@@ -184,15 +184,21 @@
     function beginQuiz() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('quiz-ui').classList.remove('hidden');
-        document.getElementById('quiz-header').innerText = window.currentQuiz.name;
         
-        let raw = isRetry ? wrongs : window.currentQuiz.data;
-        currentQuestions = applyMode(window.currentQuiz.mode, raw);
+        const quiz = window.currentQuiz;
+        document.getElementById('quiz-header').innerText = quiz.name;
+        
+        let raw = isRetry ? wrongs : quiz.data;
+        currentQuestions = applyMode(quiz.mode, raw);
         userAnswers = {};
         
-        // 讀取題庫 time 屬性
-        const setTime = window.currentQuiz.time;
-        totalSeconds = setTime ? setTime * 60 : currentQuestions.length * 1.5 * 60;
+        // 核心修正：強制檢查題庫檔內的 time 設定
+        if (quiz.time && quiz.time > 0) {
+            totalSeconds = quiz.time * 60;
+        } else {
+            // 如果沒設定 time，才使用題數計算 (每題 1.5 分鐘)
+            totalSeconds = currentQuestions.length * 1.5 * 60;
+        }
         
         updateTimerDisplay();
         clearInterval(timerInterval);
