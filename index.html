@@ -22,6 +22,7 @@
         th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
         th { background-color: var(--primary); color: white; }
         .review-card { text-align: left; border-left: 5px solid #eee; padding-left: 10px; margin-bottom: 15px; }
+        #timer-box { font-size: 1.1em; color: var(--error); font-weight: bold; background: #fff0f0; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--error); }
     </style>
 </head>
 <body>
@@ -31,8 +32,7 @@
         <h2>🛡️ 數據採集授權告知</h2>
         <div style="text-align:left; background:#f9f9f9; padding:15px; border:1px solid #ddd; height:180px; overflow-y:auto; margin-bottom:20px; font-size:0.9em; line-height:1.6;">
             本系統為「後方數據庫」測驗平台。當您開始測驗時，系統將自動搜集您的：姓名、測驗代碼、測驗成績及作答時間。
-            所有數據將即時上傳至 Google 試算表後端，並存儲於本設備之瀏覽器緩存以供排行榜與紀錄查詢。
-            點擊下方按鈕即代表您已閱讀並同意以上條款。
+            所有數據將即時上傳至 Google 試算表後端。點擊下方按鈕即代表您已閱讀並同意以上條款。
         </div>
         <button class="main-btn" style="background:var(--primary);" onclick="agreeTerms()">同意並進入系統</button>
     </div>
@@ -62,8 +62,9 @@
     </div>
 
     <div id="quiz-ui" class="hidden">
-        <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-weight:bold;">
             <span id="quiz-header">測驗載入中</span>
+            <div id="timer-box">⏳ 剩餘：<span id="time-left">00:00</span></div>
             <span id="cheat-warn" style="color:var(--error);">警告：0</span>
         </div>
         <div id="quiz-container"></div>
@@ -96,26 +97,19 @@
         entryScore: "entry.1691238421"
     };
 
-    let isAdmin = false;
-    let quizActive = false;
-    let isRetry = false;
-    let cheats = 0;
-    let currentQuestions = [];
-    let wrongs = [];
-    let userAnswers = {};
+    let isAdmin = false, quizActive = false, isRetry = false, cheats = 0;
+    let currentQuestions = [], wrongs = [], userAnswers = {}, timerInterval, totalSeconds = 0;
 
     function agreeTerms() {
         document.getElementById('terms-screen').classList.add('hidden');
         document.getElementById('login-screen').classList.remove('hidden');
     }
 
-    // 搜尋與管理員偵測
     document.getElementById('user-name').addEventListener('input', (e) => {
         if (e.target.value === 'admin990420') {
             isAdmin = true;
-            const t = document.getElementById('admin-title');
-            t.innerText = "張永旭(Admin) 控制模式";
-            t.style.color = "red";
+            document.getElementById('admin-title').innerText = "張永旭(Admin) 控制模式";
+            document.getElementById('admin-title').style.color = "red";
         }
     });
 
@@ -138,7 +132,6 @@
         });
     });
 
-    // 載入 JS 代碼
     document.getElementById('quiz-code').addEventListener('input', (e) => {
         const code = e.target.value.trim();
         if(code) {
@@ -159,13 +152,8 @@
 
     function checkAndStart() {
         const userName = document.getElementById('user-name').value.trim();
-        if(!userName) {
-            alert("⚠️ 系統提示：請先輸入姓名才能開始測驗！");
-            document.getElementById('user-name').focus();
-            return;
-        }
-        
-        alert("⚠️ 系統提示：按下確認後將進入全螢幕模式，若中途離開超過1次將強制交卷！");
+        if(!userName) return alert("⚠️ 系統提示：請先輸入姓名才能開始測驗！");
+        alert("⚠️ 系統提示：按下確認後將進入全螢幕並開始計時，中途離開超過1次將強制交卷！");
         if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
         isRetry = false;
         beginQuiz();
@@ -175,13 +163,40 @@
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('quiz-ui').classList.remove('hidden');
         document.getElementById('quiz-header').innerText = window.currentQuiz.name;
-        quizActive = true;
         
-        // 模式處理 (1-4)
         let raw = isRetry ? wrongs : window.currentQuiz.data;
         currentQuestions = applyMode(window.currentQuiz.mode, raw);
         userAnswers = {};
+        
+        // --- 修改處：讀取題庫內的 time 屬性 ---
+        // 如果題庫有寫 time: 10，就給 10 分鐘；如果沒寫，預設每題 1.5 分鐘
+        const setTime = window.currentQuiz.time;
+        if (setTime) {
+            totalSeconds = setTime * 60;
+        } else {
+            totalSeconds = currentQuestions.length * 1.5 * 60; 
+        }
+        
+        updateTimerDisplay();
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            totalSeconds--;
+            updateTimerDisplay();
+            if (totalSeconds <= 0) {
+                clearInterval(timerInterval);
+                alert("⏰ 時間到！系統自動交卷！");
+                evalQuiz();
+            }
+        }, 1000);
+
+        quizActive = true;
         renderQuiz();
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(totalSeconds / 60);
+        const secs = totalSeconds % 60;
+        document.getElementById('time-left').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
     }
 
     function applyMode(mode, data) {
@@ -224,19 +239,18 @@
 
     function evalQuiz() {
         quizActive = false;
+        clearInterval(timerInterval);
         document.getElementById('quiz-ui').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
 
-        let correctCount = 0;
-        let perValue = 100 / currentQuestions.length;
+        let correctCount = 0, perValue = 100 / currentQuestions.length;
         wrongs = [];
         let reviewHTML = '<h3>答案解析與訂正</h3>';
 
         currentQuestions.forEach((q, i) => {
             const isRight = userAnswers[i] === q.a;
             if(isRight) correctCount++; else wrongs.push(q);
-            
-            reviewHTML += `<div class="review-card" style="border-color:${isRight?'var(--success)':'var(--error)'}">
+            reviewHTML += `<div class="review-card" style="border-left-color:${isRight?'var(--success)':'var(--error)'}">
                 <p><b>Q${i+1}: ${q.q}</b></p>
                 <p style="color:${isRight?'green':'red'}">${isRight?'✅ 正確':'❌ 錯誤'}</p>
                 <p>您的答案：${userAnswers[i]||'未填'} / 正確答案：${q.a}</p>
@@ -247,23 +261,17 @@
         document.getElementById('final-score').innerText = score;
         document.getElementById('pass-status').innerText = score >= 60 ? "🎉 及格" : "❌ 不及格";
         document.getElementById('pass-status').style.color = score >= 60 ? "green" : "red";
-        document.getElementById('res-type').innerText = isRetry ? "錯題重測 (不計入正式排名)" : "正式測驗結算";
         document.getElementById('review-area').innerHTML = reviewHTML;
 
         if (isAdmin) document.getElementById('admin-tools').classList.remove('hidden');
-
-        if (!isRetry) {
-            sendCloud(score);
-            logLocal(score);
-        }
-
+        if (!isRetry) { sendCloud(score); logLocal(score); }
         document.getElementById('retry-btn').style.display = (wrongs.length > 0) ? 'block' : 'none';
     }
 
     function adminFix() {
         const val = document.getElementById('admin-fix-input').value;
         document.getElementById('final-score').innerText = val;
-        alert("管理員已強制修正成績為 " + val);
+        alert("管理員已修正為 " + val);
     }
 
     function sendCloud(s) {
@@ -276,20 +284,14 @@
 
     function logLocal(s) {
         let history = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        history.push({
-            user: document.getElementById('user-name').value,
-            code: document.getElementById('quiz-code').value,
-            title: window.currentQuiz.name,
-            score: s,
-            time: new Date().toLocaleString()
-        });
+        history.push({ user: document.getElementById('user-name').value, code: document.getElementById('quiz-code').value, title: window.currentQuiz.name, score: s, time: new Date().toLocaleString() });
         localStorage.setItem('qz_logs', JSON.stringify(history));
     }
 
     function openHistory() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "📖 本地答題紀錄 (含錯題重測數據)";
+        document.getElementById('list-title').innerText = "📖 本地答題紀錄";
         let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
         let h = '<table><tr><th>時間</th><th>測驗項目</th><th>成績</th></tr>';
         logs.reverse().forEach(l => h += `<tr><td>${l.time}</td><td>${l.title}</td><td>${l.score}</td></tr>`);
@@ -299,12 +301,12 @@
     function openLeaderboard() {
         document.getElementById('login-screen').classList.add('hidden');
         document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "🏆 請選擇測驗代碼查看排名";
+        document.getElementById('list-title').innerText = "🏆 請選擇代碼查看排名";
         let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
         let codes = [...new Set(logs.map(l => l.code))];
         let h = '';
-        codes.forEach(c => h += `<div class="res-item" onclick="showRank('${c}')">📈 點此查看 [代碼:${c}] 排名狀況</div>`);
-        document.getElementById('list-content').innerHTML = h || '目前尚無任何完成紀錄';
+        codes.forEach(c => h += `<div class="res-item" onclick="showRank('${c}')">📈 點此查看 [${c}] 排名</div>`);
+        document.getElementById('list-content').innerHTML = h || '目前無紀錄';
     }
 
     function showRank(c) {
@@ -315,22 +317,14 @@
         document.getElementById('list-content').innerHTML = h + '</table>';
     }
 
-    function startRetry() {
-        isRetry = true;
-        document.getElementById('result-screen').classList.add('hidden');
-        beginQuiz();
-    }
-
-    function backToMain() {
-        document.getElementById('list-screen').classList.add('hidden');
-        document.getElementById('login-screen').classList.remove('hidden');
-    }
+    function startRetry() { isRetry = true; document.getElementById('result-screen').classList.add('hidden'); beginQuiz(); }
+    function backToMain() { document.getElementById('list-screen').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); }
 
     document.addEventListener("visibilitychange", () => {
         if (document.hidden && quizActive) {
             cheats++;
             document.getElementById('cheat-warn').innerText = "警告：" + cheats;
-            if (cheats > 1) { alert("偵測到中途離開，強制交卷,別挑戰開發者的權威！"); evalQuiz(); }
+            if (cheats > 1) { alert("偵測到中途離開，強制交卷！"); evalQuiz(); }
         }
     });
 </script>
