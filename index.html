@@ -44,7 +44,7 @@
             <div id="search-results"></div>
         </div>
         <div class="input-group">
-            <input type="text" id="user-name" class="code-input" placeholder="請輸入姓名">
+            <input type="text" id="user-name" class="code-input" placeholder="請輸入姓名" required>
             <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: 101)">
             <div id="status-msg" style="font-weight:bold; color:var(--secondary); margin-top:5px;">等待遠端連線...</div>
         </div>
@@ -158,7 +158,13 @@
     });
 
     function checkAndStart() {
-        if(!document.getElementById('user-name').value) return alert("請輸入姓名");
+        const userName = document.getElementById('user-name').value.trim();
+        if(!userName) {
+            alert("⚠️ 系統提示：請先輸入姓名才能開始測驗！");
+            document.getElementById('user-name').focus();
+            return;
+        }
+        
         alert("⚠️ 系統提示：按下確認後將進入全螢幕模式，若中途離開超過1次將強制交卷！");
         if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
         isRetry = false;
