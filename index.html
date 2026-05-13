@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>多功能題測系統</title>
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$']],
+                displayMath: [['$$', '$$']],
+                processEscapes: true
+            },
+            options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+            }
+        };
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
+    
     <style>
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; user-select: none; }
@@ -78,7 +92,7 @@
     <div id="result-screen" class="hidden">
         <h2 id="res-type">測驗結算報告</h2>
         <h1 id="final-score" style="font-size: 3.5em; color:var(--secondary); margin:10px 0;">0</h1>
-        
+
         <div id="admin-tools" class="hidden" style="margin-bottom: 15px; background: #fffbe6; padding: 10px; border-radius: 8px; border: 1px solid #ffe58f;">
             <label style="font-weight: bold;">管理員修正：</label>
             <input type="number" id="admin-fix-input" placeholder="新分數" style="width:80px; padding:8px; border-radius: 5px; border: 1px solid #ccc;">
@@ -245,6 +259,11 @@
                 document.getElementById(`opts-${i}`).appendChild(b);
             });
         });
+        
+        // 排版完成後，請求 MathJax 重新渲染公式
+        if (window.MathJax) {
+            MathJax.typesetPromise([container]);
+        }
     }
 
     function confirmSubmit() { if(confirm("確定結束測驗並同步成績？")) evalQuiz(); }
@@ -271,30 +290,29 @@
         if (isAdmin) document.getElementById('admin-tools').classList.remove('hidden');
         if (!isRetry) { sendCloud(score); logLocal(score); }
         document.getElementById('retry-btn').style.display = (wrongs.length > 0) ? 'block' : 'none';
-        document.getElementById('review-area').innerHTML = reviewHTML;
-    }
-
-    // 統一更新成績介面邏輯
-    function updateScoreUI(s) {
-        document.getElementById('final-score').innerText = s;
-        const status = document.getElementById('pass-status');
-        if (s >= 60) {
-            status.innerText = "🎉 及格";
-            status.style.color = "green";
-        } else {
-            status.innerText = "❌ 不及格";
-            status.style.color = "red";
+        
+        const reviewArea = document.getElementById('review-area');
+        reviewArea.innerHTML = reviewHTML;
+        
+        // 渲染結算報告中的數學公式
+        if (window.MathJax) {
+            MathJax.typesetPromise([reviewArea]);
         }
     }
 
-    // 管理員修正核心：更新介面、判定、同步紀錄與雲端
+    function updateScoreUI(s) {
+        document.getElementById('final-score').innerText = s;
+        const status = document.getElementById('pass-status');
+        if (s >= 60) { status.innerText = "🎉 及格"; status.style.color = "green"; }
+        else { status.innerText = "❌ 不及格"; status.style.color = "red"; }
+    }
+
     function adminFix() {
         const val = parseInt(document.getElementById('admin-fix-input').value);
         if (isNaN(val)) return alert("請輸入有效的數字分數！");
-        
-        updateScoreUI(val); // 更新及格狀態
-        logLocal(val);       // 更新本地紀錄 (覆蓋舊分)
-        sendCloud(val);     // 重新同步雲端
+        updateScoreUI(val);
+        logLocal(val);
+        sendCloud(val);
         alert("管理員已將成績修正為 " + val + " 分，並已同步更新所有紀錄。");
     }
 
@@ -311,9 +329,7 @@
         const name = document.getElementById('user-name').value;
         const code = document.getElementById('quiz-code').value;
         const existingIdx = logs.findIndex(l => l.user === name && l.code === code);
-        
         if (existingIdx !== -1) {
-            // 管理員修改時強行覆蓋，正常測驗則取最高分
             if (isAdmin || s > logs[existingIdx].score) {
                 logs[existingIdx].score = s;
                 logs[existingIdx].time = new Date().toLocaleString();
