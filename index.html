@@ -3,18 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>多功能題測系統</title>
+    <title>高階電子數據檢測系統</title>
     
     <script>
         window.MathJax = {
-            tex: {
-                inlineMath: [['$', '$']],
-                displayMath: [['$$', '$$']],
-                processEscapes: true
-            },
-            options: {
-                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
-            }
+            tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']], processEscapes: true },
+            options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
         };
     </script>
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
@@ -23,137 +17,63 @@
         :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
         body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; user-select: none; }
         .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .input-group { margin-bottom: 15px; }
         .code-input { width: 90%; padding: 12px; font-size: 1.1em; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
         .main-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; color: white; font-weight: bold; transition: 0.3s; margin-top: 10px; }
-        .search-area { background: #f8f9fa; padding: 12px; border-radius: 10px; margin-bottom: 20px; border: 1px dashed #bbb; }
-        #search-results, .list-box { text-align: left; max-height: 250px; overflow-y: auto; background: white; margin-top: 5px; border: 1px solid #eee; }
-        .res-item { padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; font-size: 0.95em; display: flex; justify-content: space-between; align-items: center; }
         .hidden { display: none; }
         .question-card { text-align: left; padding: 15px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; background: #fff; }
-        .opt-btn { width: 100%; padding: 10px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; background: #fff; text-align: left; cursor: pointer; }
+        .opt-btn { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; background: #fff; text-align: left; cursor: pointer; }
         .opt-btn.selected { background: var(--secondary); color: white; border-color: var(--secondary); }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9em; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: center; }
-        th { background-color: var(--primary); color: white; }
-        .review-card { text-align: left; border-left: 5px solid #eee; padding-left: 10px; margin-bottom: 15px; }
+        .review-card { text-align: left; border-left: 5px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa; }
         #timer-box { font-size: 1.1em; color: var(--error); font-weight: bold; background: #fff0f0; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--error); }
-        .pass-line { background: #ffeded; color: #e74c3c; font-weight: bold; font-size: 0.85em; }
-        .del-btn { background: #ff4d4d; color: white; border: none; padding: 2px 8px; border-radius: 4px; cursor: pointer; font-size: 0.8em; }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false" onselectstart="return false">
 
 <div class="container">
-    <div id="terms-screen">
-        <h2>🛡️ 數據採集授權告知</h2>
-        <div style="text-align:left; background:#f9f9f9; padding:15px; border:1px solid #ddd; height:180px; overflow-y:auto; margin-bottom:20px; font-size:0.9em; line-height:1.6;">
-            本系統為「後方數據庫」測驗平台。當您開始測驗時，系統將自動搜集您的：姓名、測驗代碼、測驗成績及作答時間。
-            所有數據將即時上傳至 Google 試算表後端。點擊下方按鈕即代表您已閱讀並同意以上條款。
-        </div>
-        <button class="main-btn" style="background:var(--primary);" onclick="agreeTerms()">同意並進入系統</button>
-    </div>
-
-    <div id="login-screen" class="hidden">
-        <h2 id="admin-title">線上題測系統</h2>
-        <div class="search-area">
-            <input type="text" id="search-input" class="code-input" placeholder="🔍 搜尋測驗 (例如: 物理)">
-            <div id="search-results"></div>
-        </div>
+    <div id="login-screen">
+        <h2>🔒 測驗安全終端</h2>
         <div class="input-group">
-            <input type="text" id="user-name" class="code-input" placeholder="請輸入姓名" required>
-            <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: 101)">
-            <div id="status-msg" style="font-weight:bold; color:var(--secondary); margin-top:5px;">等待遠端連線...</div>
+            <input type="text" id="user-name" class="code-input" placeholder="考生真實姓名">
+            <input type="text" id="quiz-code" class="code-input" placeholder="測驗代碼 (Code)">
+            
+            <div id="password-area" class="hidden" style="margin-top: 10px;">
+                <input type="password" id="quiz-pass" class="code-input" placeholder="請輸入題庫密碼" style="border-color: var(--secondary);">
+            </div>
+            
+            <div id="status-msg" style="color:var(--secondary); font-size: 0.85em; margin: 10px 0;">等待伺服器連線...</div>
         </div>
         <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取數據</button>
-        <button id="download-btn" class="main-btn" onclick="downloadQuiz()" style="background:#6c757d; font-size: 0.9em; display: none;">📥 下載此題庫 (UTF-8 修正版)</button>
-
-        <div style="display:flex; gap:10px; margin-top:10px;">
-            <button class="main-btn" style="background:var(--primary); font-size:0.9em;" onclick="openLeaderboard()">🏆 排行榜</button>
-            <button class="main-btn" style="background:#6c757d; font-size:0.9em;" onclick="openHistory()">📖 答題紀錄</button>
-        </div>
-    </div>
-
-    <div id="list-screen" class="hidden">
-        <h3 id="list-title">數據列表</h3>
-        <div id="list-content" class="list-box"></div>
-        <button class="main-btn" style="background:#95a5a6;" onclick="backToMain()">返回主選單</button>
     </div>
 
     <div id="quiz-ui" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; font-weight:bold;">
-            <span id="quiz-header">測驗載入中</span>
-            <div id="timer-box">⏳ 剩餘：<span id="time-left">00:00</span></div>
-            <span id="cheat-warn" style="color:var(--error);">警告：0</span>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <span id="quiz-header" style="font-weight:bold;">載入中...</span>
+            <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
         </div>
         <div id="quiz-container"></div>
-        <button class="main-btn" style="background:var(--primary);" onclick="confirmSubmit()">提交數據並同步後端</button>
+        <button class="main-btn" style="background:var(--primary);" onclick="confirmSubmit()">傳送數據並同步</button>
     </div>
 
     <div id="result-screen" class="hidden">
-        <h2 id="res-type">測驗結算報告</h2>
-        <h1 id="final-score" style="font-size: 3.5em; color:var(--secondary); margin:10px 0;">0</h1>
-
-        <div id="admin-tools" class="hidden" style="margin-bottom: 15px; background: #fffbe6; padding: 10px; border-radius: 8px; border: 1px solid #ffe58f;">
-            <label style="font-weight: bold;">管理員修正：</label>
-            <input type="number" id="admin-fix-input" placeholder="新分數" style="width:80px; padding:8px; border-radius: 5px; border: 1px solid #ccc;">
-            <button onclick="adminFix()" style="background: #faad14; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">套用並更新紀錄</button>
-        </div>
-
-        <p id="pass-status" style="font-size:1.2em; font-weight:bold;"></p>
-        <div style="display:flex; gap:10px;">
-            <button class="main-btn" style="background:#95a5a6;" onclick="location.reload()">回首頁</button>
-            <button id="retry-btn" class="main-btn" style="background:var(--success); display:none;" onclick="startRetry()">錯題重測</button>
-        </div>
-        <div id="review-area" style="margin-top:20px; border-top:2px solid #eee; padding-top:15px;"></div>
+        <h2>📊 數據檢測報告</h2>
+        <h1 id="final-score" style="font-size: 4em; color:var(--secondary); margin: 0.2em 0;">0</h1>
+        <p id="pass-status" style="font-weight:bold; font-size: 1.2em;"></p>
+        <button class="main-btn" style="background:#95a5a6;" onclick="location.reload()">離開系統</button>
+        <div id="review-area" style="margin-top:20px; border-top:2px solid #ddd; padding-top:15px;"></div>
     </div>
 </div>
 
-<script src="quiz_list.js"></script>
-
 <script>
-    const FORM = {
-        id: "1FAIpQLSde9mu2wiBDl6x50wcFcnoYKZUtaY6odqmVzqubW1OPpMfkHw",
-        entryName: "entry.880479708",
-        entryQuiz: "entry.1444158913",
-        entryScore: "entry.1691238421"
-    };
+    const _secret = "MUZBSXBRTFNkZTltdTJ3aUJEbDZ4NTB3Y0Zjbm9ZS1pVdGFFNm9kcW1WenF1YlcxT1BwTWZrSHc=";
+    const ENDPOINT = atob(_secret);
 
-    let isAdmin = false, quizActive = false, isRetry = false, cheats = 0;
-    let currentQuestions = [], wrongs = [], userAnswers = {}, timerInterval, totalSeconds = 0;
+    let isAdmin = false, quizActive = false, cheats = 0;
+    let currentQuestions = [], userAnswers = {}, timerInterval, totalSeconds = 0;
 
-    function agreeTerms() {
-        document.getElementById('terms-screen').classList.add('hidden');
-        document.getElementById('login-screen').classList.remove('hidden');
-    }
+    // 禁用快捷鍵
+    document.onkeydown = (e) => { if (e.keyCode == 123 || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 73))) return false; };
 
-    document.getElementById('user-name').addEventListener('input', (e) => {
-        if (e.target.value === 'admin990420') {
-            isAdmin = true;
-            document.getElementById('admin-title').innerText = "張永旭(Admin) 控制模式";
-            document.getElementById('admin-title').style.color = "red";
-        }
-    });
-
-    document.getElementById('search-input').addEventListener('input', (e) => {
-        const key = e.target.value.toLowerCase();
-        const res = document.getElementById('search-results');
-        res.innerHTML = '';
-        if(!key || !window.allQuizzes) return;
-        window.allQuizzes.filter(q => q.name.includes(key)).forEach(q => {
-            const d = document.createElement('div');
-            d.className = 'res-item';
-            d.innerHTML = `<span>📌 ${q.name} (${q.code})</span>`;
-            d.onclick = () => {
-                document.getElementById('quiz-code').value = q.code;
-                document.getElementById('search-input').value = q.name;
-                res.innerHTML = '';
-                document.getElementById('quiz-code').dispatchEvent(new Event('input'));
-            };
-            res.appendChild(d);
-        });
-    });
-
+    // 密碼邏輯處理
     document.getElementById('quiz-code').addEventListener('input', (e) => {
         const code = e.target.value.trim();
         if(code) {
@@ -162,40 +82,35 @@
             s.id = 'q-script'; s.src = `${code}.js`;
             s.onload = () => {
                 if(window.currentQuiz) {
-                    document.getElementById('status-msg').innerText = `✅ 已連線：${window.currentQuiz.name}`;
+                    document.getElementById('status-msg').innerText = `✅ 已尋獲：${window.currentQuiz.name}`;
+                    // 如果題庫有密碼，顯示密碼框
+                    if(window.currentQuiz.password) {
+                        document.getElementById('password-area').classList.remove('hidden');
+                        document.getElementById('status-msg').innerText += " (受保護的題庫)";
+                    } else {
+                        document.getElementById('password-area').classList.add('hidden');
+                    }
                     document.getElementById('start-btn').disabled = false;
                     document.getElementById('start-btn').style.background = "var(--success)";
-                    document.getElementById('start-btn').innerText = "進入數據庫測驗";
-                    document.getElementById('download-btn').style.display = "block";
                 }
             };
             document.head.appendChild(s);
         }
     });
 
-    function downloadQuiz() {
-        if(!window.currentQuiz) return;
-        let content = `題庫名稱：${window.currentQuiz.name}\n產出時間：${new Date().toLocaleString()}\n------------------------------------------\n\n`;
-        window.currentQuiz.data.forEach((item, index) => {
-            content += `${index + 1}. ${item.q}\n${item.o.join('\n')}\n答案：(${item.a})\n\n`;
-        });
-        const blob = new Blob(["\ufeff" + content], { type: "text/plain;charset=utf-8" });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = `${window.currentQuiz.name}_題庫.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-    }
-
     function checkAndStart() {
         const userName = document.getElementById('user-name').value.trim();
-        if(!userName) return alert("⚠️ 系統提示：請先輸入姓名！");
-        alert("⚠️ 系統提示：按下確認後開始計時，中途離開超過1次將自動交卷！");
+        if(!userName) return alert("請輸入姓名");
+        
+        // 驗證密碼
+        if(window.currentQuiz.password) {
+            const userPass = document.getElementById('quiz-pass').value;
+            if(userPass !== window.currentQuiz.password) {
+                return alert("❌ 題庫密碼錯誤，請詢問管理員！");
+            }
+        }
+
         if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-        isRetry = false;
         beginQuiz();
     }
 
@@ -204,43 +119,18 @@
         document.getElementById('quiz-ui').classList.remove('hidden');
         const quiz = window.currentQuiz;
         document.getElementById('quiz-header').innerText = quiz.name;
-        let raw = isRetry ? wrongs : quiz.data;
-        currentQuestions = applyMode(quiz.mode, raw);
-        userAnswers = {};
-        if (quiz.time && quiz.time > 0) totalSeconds = quiz.time * 60;
-        else totalSeconds = currentQuestions.length * 1.5 * 60;
-        updateTimerDisplay();
-        clearInterval(timerInterval);
+        
+        currentQuestions = JSON.parse(JSON.stringify(quiz.data)).sort(() => Math.random() - 0.5);
+        totalSeconds = (quiz.time || 25) * 60;
+        
         timerInterval = setInterval(() => {
             totalSeconds--;
-            updateTimerDisplay();
-            if (totalSeconds <= 0) { clearInterval(timerInterval); evalQuiz(); }
+            const mins = Math.floor(totalSeconds / 60), secs = totalSeconds % 60;
+            document.getElementById('time-left').innerText = `${mins}:${secs.toString().padStart(2,'0')}`;
+            if (totalSeconds <= 0) evalQuiz();
         }, 1000);
         quizActive = true;
         renderQuiz();
-    }
-
-    function updateTimerDisplay() {
-        const mins = Math.floor(totalSeconds / 60);
-        const secs = totalSeconds % 60;
-        document.getElementById('time-left').innerText = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    }
-
-    function applyMode(mode, data) {
-        let d = JSON.parse(JSON.stringify(data));
-        if (mode === 2 || mode === 4) d.sort(() => Math.random() - 0.5);
-        if (mode === 3 || mode === 4) {
-            d.forEach(item => {
-                const correctTxt = item.o.find(o => o.startsWith(`(${item.a})`)).substring(3);
-                let opts = item.o.map(o => o.substring(3)).sort(() => Math.random() - 0.5);
-                item.o = opts.map((t, i) => {
-                    const l = String.fromCharCode(65 + i);
-                    if(t === correctTxt) item.a = l;
-                    return `(${l})${t}`;
-                });
-            });
-        }
-        return d;
     }
 
     function renderQuiz() {
@@ -248,165 +138,71 @@
         container.innerHTML = '';
         currentQuestions.forEach((q, i) => {
             const card = document.createElement('div'); card.className = 'question-card';
-            card.innerHTML = `<p><strong>${i+1}. ${q.q}</strong></p><div id="opts-${i}"></div>`;
+            card.innerHTML = `<p><strong>Q${i+1}. ${q.q}</strong></p><div id="opts-${i}"></div>`;
             container.appendChild(card);
-            q.o.forEach(opt => {
+            
+            // 選項隨機化
+            const shuffledOpts = [...q.o].sort(() => Math.random() - 0.5);
+            shuffledOpts.forEach(opt => {
                 const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
                 b.onclick = () => {
-                    userAnswers[i] = opt.charAt(1);
+                    userAnswers[i] = opt.match(/\(([A-D])\)/)[1];
                     Array.from(b.parentElement.children).forEach(x => x.classList.remove('selected'));
                     b.classList.add('selected');
                 };
                 document.getElementById(`opts-${i}`).appendChild(b);
             });
         });
-        
-        if (window.MathJax) {
-            MathJax.typesetPromise([container]);
-        }
+        if (window.MathJax) MathJax.typesetPromise([container]);
     }
 
-    function confirmSubmit() { if(confirm("確定結束測驗並同步成績？")) evalQuiz(); }
+    function confirmSubmit() { if(confirm("確定提交？")) evalQuiz(); }
 
     function evalQuiz() {
         quizActive = false;
         clearInterval(timerInterval);
         document.getElementById('quiz-ui').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
-        let correctCount = 0, perValue = 100 / currentQuestions.length;
-        wrongs = [];
-        let reviewHTML = '<h3>答案解析與訂正</h3>';
+        let correctCount = 0;
+        let reviewHTML = '<h3>❌ 錯題訂正與正確公式</h3>';
         
         currentQuestions.forEach((q, i) => {
+            const correctOptStr = q.o.find(str => str.startsWith(`(${q.a})`));
             const isRight = userAnswers[i] === q.a;
-            if(isRight) {
-                correctCount++;
-            } else {
-                wrongs.push(q);
-            }
+            if(isRight) correctCount++;
             
-            // 關鍵修改：尋找正確選項的完整文字內容
-            const correctOptionText = q.o.find(opt => opt.trim().startsWith(`(${q.a})`)) || `(${q.a})`;
-
             reviewHTML += `
-                <div class="review-card" style="border-left: 5px solid ${isRight ? 'var(--success)' : 'var(--error)'}">
+                <div class="review-card" style="border-left: 5px solid ${isRight?'var(--success)':'var(--error)'}">
                     <p><b>Q${i+1}: ${q.q}</b></p>
-                    <p style="color:${isRight ? 'green' : 'red'}">${isRight ? '✅ 正確' : '❌ 錯誤'}</p>
-                    <p>您的答案：<span style="font-weight:bold">${userAnswers[i] || '未填'}</span></p>
-                    <p style="color:var(--success); font-weight:bold;">正確選項：${correctOptionText}</p>
+                    <p>您選擇：${userAnswers[i]||'未填'} | <span style="color:var(--success)">正確答案：${correctOptStr}</span></p>
                 </div>`;
         });
 
-        const score = Math.round(correctCount * perValue);
-        updateScoreUI(score);
-        if (isAdmin) document.getElementById('admin-tools').classList.remove('hidden');
-        if (!isRetry) { sendCloud(score); logLocal(score); }
-        document.getElementById('retry-btn').style.display = (wrongs.length > 0) ? 'block' : 'none';
+        const score = Math.round(correctCount * (100 / currentQuestions.length));
+        document.getElementById('final-score').innerText = score;
+        document.getElementById('review-area').innerHTML = reviewHTML;
         
-        const reviewArea = document.getElementById('review-area');
-        reviewArea.innerHTML = reviewHTML;
-        
-        if (window.MathJax) {
-            MathJax.typesetPromise([reviewArea]);
-        }
-    }
+        // 判定及格
+        const ps = document.getElementById('pass-status');
+        ps.innerText = score >= 60 ? "判定：及格" : "判定：不及格";
+        ps.style.color = score >= 60 ? "green" : "red";
 
-    function updateScoreUI(s) {
-        document.getElementById('final-score').innerText = s;
-        const status = document.getElementById('pass-status');
-        if (s >= 60) { status.innerText = "🎉 及格"; status.style.color = "green"; }
-        else { status.innerText = "❌ 不及格"; status.style.color = "red"; }
-    }
-
-    function adminFix() {
-        const val = parseInt(document.getElementById('admin-fix-input').value);
-        if (isNaN(val)) return alert("請輸入有效的數字分數！");
-        updateScoreUI(val);
-        logLocal(val);
-        sendCloud(val);
-        alert("管理員已將成績修正為 " + val + " 分，並已同步更新所有紀錄。");
+        sendCloud(score);
+        if (window.MathJax) MathJax.typesetPromise([document.getElementById('review-area')]);
     }
 
     function sendCloud(s) {
         const body = new URLSearchParams();
-        body.append(FORM.entryName, document.getElementById('user-name').value + (isAdmin ? "(Admin)" : ""));
-        body.append(FORM.entryQuiz, `${window.currentQuiz.name}(${document.getElementById('quiz-code').value})`);
-        body.append(FORM.entryScore, s);
-        fetch(`https://docs.google.com/forms/d/e/${FORM.id}/formResponse`, { method: "POST", mode: "no-cors", body: body });
+        body.append("entry.880479708", document.getElementById('user-name').value);
+        body.append("entry.1444158913", window.currentQuiz.name);
+        body.append("entry.1691238421", s);
+        fetch(`https://docs.google.com/forms/d/e/${ENDPOINT}/formResponse`, { method: "POST", mode: "no-cors", body: body });
     }
-
-    function logLocal(s) {
-        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        const name = document.getElementById('user-name').value;
-        const code = document.getElementById('quiz-code').value;
-        const existingIdx = logs.findIndex(l => l.user === name && l.code === code);
-        if (existingIdx !== -1) {
-            if (isAdmin || s > logs[existingIdx].score) {
-                logs[existingIdx].score = s;
-                logs[existingIdx].time = new Date().toLocaleString();
-            }
-        } else {
-            logs.push({ user: name, code: code, title: window.currentQuiz.name, score: s, time: new Date().toLocaleString() });
-        }
-        localStorage.setItem('qz_logs', JSON.stringify(logs));
-    }
-
-    function openHistory() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "📖 答題紀錄";
-        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        let h = '<table><tr><th>時間</th><th>項</th><th>分</th></tr>';
-        logs.reverse().forEach(l => h += `<tr><td>${l.time}</td><td>${l.title}</td><td>${l.score}</td></tr>`);
-        document.getElementById('list-content').innerHTML = h + '</table>';
-    }
-
-    function openLeaderboard() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('list-screen').classList.remove('hidden');
-        document.getElementById('list-title').innerText = "🏆 排行榜 (點選題庫)";
-        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        let codes = [...new Set(logs.map(l => l.code))];
-        let h = '';
-        codes.forEach(c => {
-            const title = logs.find(l => l.code === c).title;
-            h += `<div class="res-item" onclick="showRank('${c}')"><span>📈 ${title} (${c})</span></div>`;
-        });
-        document.getElementById('list-content').innerHTML = h || '目前無紀錄';
-    }
-
-    function showRank(c) {
-        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        let filtered = logs.filter(l => l.code === c).sort((a,b) => b.score - a.score);
-        let h = `<h4>${filtered[0].title} 排名</h4><table><tr><th>名次</th><th>姓名</th><th>成績</th>${isAdmin?'<th>管理</th>':''}</tr>`;
-        let passLineShown = false;
-        filtered.forEach((l, i) => {
-            if (!passLineShown && l.score < 60) {
-                h += `<tr class="pass-line"><td colspan="${isAdmin?4:3}">--- 以上及格 / 以下不及格 ---</td></tr>`;
-                passLineShown = true;
-            }
-            h += `<tr><td>${i+1}</td><td>${l.user}</td><td>${l.score}</td>
-                  ${isAdmin ? `<td><button class="del-btn" onclick="adminDelete('${l.user}', '${l.code}')">🗑️</button></td>` : ''}</tr>`;
-        });
-        document.getElementById('list-content').innerHTML = h + '</table>';
-    }
-
-    function adminDelete(user, code) {
-        if (!confirm(`確定要刪除 ${user} 的這筆紀錄嗎？`)) return;
-        let logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        logs = logs.filter(l => !(l.user === user && l.code === code));
-        localStorage.setItem('qz_logs', JSON.stringify(logs));
-        showRank(code);
-    }
-
-    function startRetry() { isRetry = true; document.getElementById('result-screen').classList.add('hidden'); beginQuiz(); }
-    function backToMain() { document.getElementById('list-screen').classList.add('hidden'); document.getElementById('login-screen').classList.remove('hidden'); }
 
     document.addEventListener("visibilitychange", () => {
         if (document.hidden && quizActive) {
             cheats++;
-            document.getElementById('cheat-warn').innerText = "警告：" + cheats;
-            if (cheats > 1) { alert("偵測到中途離開，強制交卷！"); evalQuiz(); }
+            if (cheats > 1) { alert("偵測到異常操作，強制繳交！"); evalQuiz(); }
         }
     });
 </script>
