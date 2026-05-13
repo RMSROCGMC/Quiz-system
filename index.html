@@ -31,14 +31,14 @@
 
 <div class="container">
     <div id="login-screen">
-        <h2>🔒 題測授權終端</h2>
+        <h2>模擬題測系統</h2>
         <div class="input-group">
             <input type="text" id="user-name" class="code-input" placeholder="考生姓名">
             <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: test01)">
             <div id="password-area" class="hidden">
                 <input type="password" id="quiz-pass" class="code-input" placeholder="輸入題庫密碼">
             </div>
-            <div id="status-msg" style="color:var(--secondary); font-size: 0.85em; margin: 10px 0;">等待讀取 JS 檔案...</div>
+            <div id="status-msg" style="color:var(--secondary); font-size: 0.85em; margin: 10px 0;">等待讀取伺服器題庫檔案...</div>
         </div>
         <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未偵測到題庫</button>
     </div>
