@@ -3,124 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>東港海事 - 模擬測驗系統</title>
+    <title>測驗系統 - 主選單</title>
     <style>
-        :root { --primary: #2c3e50; --accent: #3498db; }
-        body { font-family: -apple-system, "Microsoft JhengHei", sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: #333; }
-        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); padding: 20px; }
-        .input-group { margin-bottom: 20px; }
-        input { width: 100%; padding: 12px; margin-top: 8px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: var(--accent); color: white; border: none; border-radius: 6px; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; justify-content: center; padding: 20px; }
+        .card { background: white; width: 100%; max-width: 400px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #3498db; color: white; border: none; border-radius: 8px; cursor: pointer; font-size: 16px; }
         button:hover { background: #2980b9; }
-        .menu-item { padding: 15px; border: 1px solid #ddd; margin-top: 10px; border-radius: 8px; cursor: pointer; transition: 0.2s; }
-        .menu-item:hover { background: #eef7ff; border-color: var(--accent); }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { padding: 12px; border-bottom: 1px solid #eee; text-align: center; }
-        th { background: var(--primary); color: white; }
-        .pass-line { background: #fff0f0; color: #e74c3c; font-size: 0.85em; font-weight: bold; }
+        .quiz-item { padding: 10px; border: 1px solid #eee; margin-top: 10px; border-radius: 8px; cursor: pointer; }
+        .quiz-item:hover { background: #f9f9f9; }
         .hidden { display: none; }
     </style>
 </head>
 <body>
 
-<div class="container" id="app">
-    <div id="home-screen">
-        <h2 style="text-align:center;">🏆 模擬測驗系統</h2>
-        
-        <div class="input-group">
-            <label>👤 學生姓名</label>
-            <input type="text" id="user-name" placeholder="請輸入姓名">
-            
-            <label style="margin-top:15px; display:block;">🔑 題庫代碼</label>
-            <input type="text" id="quiz-code" placeholder="例如：MH-1140202-E1B">
-        </div>
-
-        <button onclick="startQuiz()">開始測驗</button>
-        
-        <hr style="margin: 25px 0; border: 0; border-top: 1px solid #eee;">
-        
-        <h3>📊 題庫排行榜</h3>
-        <div id="quiz-list-container">
-            </div>
+<div class="card">
+    <div id="home">
+        <h2 style="text-align:center;">📝 模擬測驗系統</h2>
+        <input type="text" id="username" placeholder="輸入姓名">
+        <input type="text" id="quizcode" placeholder="輸入題庫代碼">
+        <button onclick="goToQuiz()">開始考試</button>
+        <hr>
+        <h4>快速查看排行榜</h4>
+        <div id="quiz-list"></div>
     </div>
 
-    <div id="rank-screen" class="hidden">
-        <button onclick="backToHome()" style="background:#95a5a6; margin-bottom:15px;">返回主選單</button>
-        <div id="list-content">載入數據中...</div>
+    <div id="rank" class="hidden">
+        <button onclick="showHome()" style="background:#95a5a6;">返回首頁</button>
+        <div id="rank-data"></div>
     </div>
 </div>
 
 <script src="quiz_list.js"></script>
-
 <script>
-    // 1. 初始化題庫選單
-    window.onload = function() {
-        const listDiv = document.getElementById('quiz-list-container');
-        if (window.allQuizzes && Array.isArray(window.allQuizzes)) {
+    // 初始化清單
+    window.onload = () => {
+        const container = document.getElementById('quiz-list');
+        if (window.allQuizzes) {
             window.allQuizzes.forEach(q => {
-                let div = document.createElement('div');
-                div.className = 'menu-item';
-                div.innerHTML = `<strong>${q.name}</strong><br><small>代碼: ${q.code}</small>`;
-                div.onclick = () => showRank(q.code, q.name);
-                listDiv.appendChild(div);
+                const div = document.createElement('div');
+                div.className = 'quiz-item';
+                div.innerHTML = `<b>${q.name}</b><br><small>${q.code}</small>`;
+                div.onclick = () => showRank(q.code);
+                container.appendChild(div);
             });
-        } else {
-            listDiv.innerHTML = "<p style='color:red;'>無法讀取題庫清單 (quiz_list.js 錯誤)</p>";
         }
     };
 
-    // 2. 開始測驗轉跳邏輯 (修正 404 問題)
-    function startQuiz() {
-        const name = document.getElementById('user-name').value.trim();
-        const code = document.getElementById('quiz-code').value.trim();
-        
-        if (!name || !code) {
-            alert("請填寫姓名與代碼！");
-            return;
-        }
-
-        // 確保檔案名稱匹配：轉跳到 quiz.html 並帶入參數
-        // 請確保你的 GitHub 有 quiz.html 這個檔案
-        window.location.href = `quiz.html?code=${code}&user=${encodeURIComponent(name)}`;
+    function goToQuiz() {
+        const user = document.getElementById('username').value;
+        const code = document.getElementById('quizcode').value;
+        if (!user || !code) return alert("請填寫姓名與代碼");
+        // 核心修復：確保轉跳路徑正確
+        window.location.href = `quiz.html?code=${code}&user=${encodeURIComponent(user)}`;
     }
 
-    // 3. 顯示排行榜邏輯
-    function showRank(code, title) {
-        document.getElementById('home-screen').classList.add('hidden');
-        document.getElementById('rank-screen').classList.remove('hidden');
-        
+    function showRank(code) {
+        document.getElementById('home').classList.add('hidden');
+        document.getElementById('rank').classList.remove('hidden');
         const logs = JSON.parse(localStorage.getItem('qz_logs') || '[]');
-        const filtered = logs.filter(l => l.code === code).sort((a, b) => b.score - a.score);
+        const filtered = logs.filter(l => l.code === code).sort((a,b) => b.score - a.score);
         
-        renderTable(filtered, title);
-    }
-
-    function renderTable(data, title) {
-        const contentDiv = document.getElementById('list-content');
-        if (data.length === 0) {
-            contentDiv.innerHTML = `<h3>${title}</h3><p>目前尚無本地測驗紀錄。</p>`;
-            return;
+        let html = `<h3>${code} 排名</h3>`;
+        if(filtered.length === 0) html += "<p>尚無紀錄</p>";
+        else {
+            html += "<ul>";
+            filtered.forEach(l => html += `<li>${l.user}: ${l.score}分</li>`);
+            html += "</ul>";
         }
-
-        let html = `<h3>${title} 排名</h3><table><tr><th>名次</th><th>姓名</th><th>成績</th></tr>`;
-        let passMarked = false;
-
-        data.forEach((item, index) => {
-            if (!passMarked && item.score < 60) {
-                html += `<tr class="pass-line"><td colspan="3">--- 以下不及格 ---</td></tr>`;
-                passMarked = true;
-            }
-            html += `<tr><td>${index + 1}</td><td>${item.user}</td><td>${item.score}</td></tr>`;
-        });
-        
-        contentDiv.innerHTML = html + "</table>";
+        document.getElementById('rank-data').innerHTML = html;
     }
 
-    function backToHome() {
-        document.getElementById('rank-screen').classList.add('hidden');
-        document.getElementById('home-screen').classList.remove('hidden');
+    function showHome() {
+        document.getElementById('rank').classList.add('hidden');
+        document.getElementById('home').classList.remove('hidden');
     }
 </script>
-
 </body>
 </html>
