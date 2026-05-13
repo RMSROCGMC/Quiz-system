@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>電子數據檢測測驗系統</title>
+    <title>跨學科數據檢測系統</title>
     
     <script>
         window.MathJax = {
@@ -27,22 +27,20 @@
         #timer-box { font-size: 1.1em; color: var(--error); font-weight: bold; background: #fff0f0; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--error); }
     </style>
 </head>
-<body oncontextmenu="return false" onselectstart="return false">
+<body oncontextmenu="return false">
 
 <div class="container">
     <div id="login-screen">
-        <h2>🔒 測驗安全終端</h2>
+        <h2>🔒 題測授權終端</h2>
         <div class="input-group">
-            <input type="text" id="user-name" class="code-input" placeholder="考生真實姓名">
-            <input type="text" id="quiz-code" class="code-input" placeholder="測驗代碼 (Code)">
-            
-            <div id="password-area" class="hidden" style="margin-top: 10px;">
-                <input type="password" id="quiz-pass" class="code-input" placeholder="請輸入題庫密碼" style="border-color: var(--secondary);">
+            <input type="text" id="user-name" class="code-input" placeholder="考生姓名">
+            <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: test01)">
+            <div id="password-area" class="hidden">
+                <input type="password" id="quiz-pass" class="code-input" placeholder="輸入題庫密碼">
             </div>
-            
-            <div id="status-msg" style="color:var(--secondary); font-size: 0.85em; margin: 10px 0;">等待伺服器連線...</div>
+            <div id="status-msg" style="color:var(--secondary); font-size: 0.85em; margin: 10px 0;">等待讀取 JS 檔案...</div>
         </div>
-        <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未讀取數據</button>
+        <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>尚未偵測到題庫</button>
     </div>
 
     <div id="quiz-ui" class="hidden">
@@ -51,45 +49,33 @@
             <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
         </div>
         <div id="quiz-container"></div>
-        <button class="main-btn" style="background:var(--primary);" onclick="confirmSubmit()">傳送數據並同步</button>
+        <button class="main-btn" style="background:var(--primary);" onclick="confirmSubmit()">提交作答</button>
     </div>
 
     <div id="result-screen" class="hidden">
-        <h2>📊 數據檢測報告</h2>
-        <h1 id="final-score" style="font-size: 4em; color:var(--secondary); margin: 0.2em 0;">0</h1>
-        <p id="pass-status" style="font-weight:bold; font-size: 1.2em;"></p>
-        <button class="main-btn" style="background:#95a5a6;" onclick="location.reload()">離開系統</button>
+        <h2>📊 結算報告</h2>
+        <h1 id="final-score" style="font-size: 4em; color:var(--secondary);">0</h1>
+        <p id="pass-status" style="font-weight:bold;"></p>
+        <button class="main-btn" style="background:#95a5a6;" onclick="location.reload()">返回登入</button>
         <div id="review-area" style="margin-top:20px; border-top:2px solid #ddd; padding-top:15px;"></div>
     </div>
 </div>
 
 <script>
-    const _secret = "MUZBSXBRTFNkZTltdTJ3aUJEbDZ4NTB3Y0Zjbm9ZS1pVdGFFNm9kcW1WenF1YlcxT1BwTWZrSHc=";
-    const ENDPOINT = atob(_secret);
-
-    let isAdmin = false, quizActive = false, cheats = 0;
+    let quizActive = false, cheats = 0;
     let currentQuestions = [], userAnswers = {}, timerInterval, totalSeconds = 0;
 
-    // 禁用快捷鍵
-    document.onkeydown = (e) => { if (e.keyCode == 123 || (e.ctrlKey && (e.keyCode == 85 || e.keyCode == 73))) return false; };
-
-    // 密碼邏輯處理
+    // 1. 動態偵測題庫與密碼 (自動適應所有檔案)
     document.getElementById('quiz-code').addEventListener('input', (e) => {
         const code = e.target.value.trim();
         if(code) {
             const old = document.getElementById('q-script'); if(old) old.remove();
             const s = document.createElement('script');
-            s.id = 'q-script'; s.src = `${code}.js`;
+            s.id = 'q-script'; s.src = `${code}.js`; // 對應截圖中的 .js 檔案
             s.onload = () => {
                 if(window.currentQuiz) {
-                    document.getElementById('status-msg').innerText = `✅ 已尋獲：${window.currentQuiz.name}`;
-                    // 如果題庫有密碼，顯示密碼框
-                    if(window.currentQuiz.password) {
-                        document.getElementById('password-area').classList.remove('hidden');
-                        document.getElementById('status-msg').innerText += " (受保護的題庫)";
-                    } else {
-                        document.getElementById('password-area').classList.add('hidden');
-                    }
+                    document.getElementById('status-msg').innerText = `✅ 已讀取：${window.currentQuiz.name}`;
+                    if(window.currentQuiz.password) document.getElementById('password-area').classList.remove('hidden');
                     document.getElementById('start-btn').disabled = false;
                     document.getElementById('start-btn').style.background = "var(--success)";
                 }
@@ -99,18 +85,10 @@
     });
 
     function checkAndStart() {
-        const userName = document.getElementById('user-name').value.trim();
-        if(!userName) return alert("請輸入姓名");
-        
-        // 驗證密碼
-        if(window.currentQuiz.password) {
-            const userPass = document.getElementById('quiz-pass').value;
-            if(userPass !== window.currentQuiz.password) {
-                return alert("❌ 題庫密碼錯誤，請詢問管理員！");
-            }
+        if(!document.getElementById('user-name').value.trim()) return alert("請輸入姓名");
+        if(window.currentQuiz.password && document.getElementById('quiz-pass').value !== window.currentQuiz.password) {
+            return alert("密碼錯誤");
         }
-
-        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
         beginQuiz();
     }
 
@@ -120,8 +98,9 @@
         const quiz = window.currentQuiz;
         document.getElementById('quiz-header').innerText = quiz.name;
         
+        // 隨機化處理
         currentQuestions = JSON.parse(JSON.stringify(quiz.data)).sort(() => Math.random() - 0.5);
-        totalSeconds = (quiz.time || 25) * 60;
+        totalSeconds = (quiz.time || 20) * 60;
         
         timerInterval = setInterval(() => {
             totalSeconds--;
@@ -141,9 +120,7 @@
             card.innerHTML = `<p><strong>Q${i+1}. ${q.q}</strong></p><div id="opts-${i}"></div>`;
             container.appendChild(card);
             
-            // 選項隨機化
-            const shuffledOpts = [...q.o].sort(() => Math.random() - 0.5);
-            shuffledOpts.forEach(opt => {
+            q.o.forEach(opt => {
                 const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
                 b.onclick = () => {
                     userAnswers[i] = opt.match(/\(([A-D])\)/)[1];
@@ -163,18 +140,21 @@
         clearInterval(timerInterval);
         document.getElementById('quiz-ui').classList.add('hidden');
         document.getElementById('result-screen').classList.remove('hidden');
+        
         let correctCount = 0;
-        let reviewHTML = '<h3>❌ 錯題訂正與正確公式</h3>';
+        let reviewHTML = '<h3>🔍 詳細解析 (正確答案已標註)</h3>';
         
         currentQuestions.forEach((q, i) => {
-            const correctOptStr = q.o.find(str => str.startsWith(`(${q.a})`));
+            // 關鍵：從選項數組中找出開頭為正確代號 (A-D) 的內容
+            const correctContent = q.o.find(str => str.trim().startsWith(`(${q.a})`));
             const isRight = userAnswers[i] === q.a;
             if(isRight) correctCount++;
             
             reviewHTML += `
                 <div class="review-card" style="border-left: 5px solid ${isRight?'var(--success)':'var(--error)'}">
                     <p><b>Q${i+1}: ${q.q}</b></p>
-                    <p>您選擇：${userAnswers[i]||'未填'} | <span style="color:var(--success)">正確答案：${correctOptStr}</span></p>
+                    <p>您的作答：${userAnswers[i]||'未填'} | 
+                    <span style="color:var(--success); font-weight:bold;">正確答案：${correctContent}</span></p>
                 </div>`;
         });
 
@@ -182,29 +162,13 @@
         document.getElementById('final-score').innerText = score;
         document.getElementById('review-area').innerHTML = reviewHTML;
         
-        // 判定及格
         const ps = document.getElementById('pass-status');
-        ps.innerText = score >= 60 ? "判定：及格" : "判定：不及格";
+        ps.innerText = score >= 60 ? "及格" : "不及格";
         ps.style.color = score >= 60 ? "green" : "red";
 
-        sendCloud(score);
+        // 強制再次運行 MathJax 渲染解析區的公式
         if (window.MathJax) MathJax.typesetPromise([document.getElementById('review-area')]);
     }
-
-    function sendCloud(s) {
-        const body = new URLSearchParams();
-        body.append("entry.880479708", document.getElementById('user-name').value);
-        body.append("entry.1444158913", window.currentQuiz.name);
-        body.append("entry.1691238421", s);
-        fetch(`https://docs.google.com/forms/d/e/${ENDPOINT}/formResponse`, { method: "POST", mode: "no-cors", body: body });
-    }
-
-    document.addEventListener("visibilitychange", () => {
-        if (document.hidden && quizActive) {
-            cheats++;
-            if (cheats > 1) { alert("偵測到異常操作，強制繳交！"); evalQuiz(); }
-        }
-    });
 </script>
 </body>
 </html>
