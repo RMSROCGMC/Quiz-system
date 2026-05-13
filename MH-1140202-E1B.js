@@ -2,6 +2,7 @@
 window.currentQuiz = {
     name: "數學科：AI模擬題測",
     mode: 4,
+    password: "981103",
     time: 25,
     data: [
         {
