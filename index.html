@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>多功能題測系統</title>
+    
     <script>
         window.MathJax = {
             tex: {
@@ -56,7 +57,7 @@
     <div id="login-screen" class="hidden">
         <h2 id="admin-title">線上題測系統</h2>
         <div class="search-area">
-            <input type="text" id="search-input" class="code-input" placeholder="🔍 搜尋測驗 (例如: 國防)">
+            <input type="text" id="search-input" class="code-input" placeholder="🔍 搜尋測驗 (例如: 物理)">
             <div id="search-results"></div>
         </div>
         <div class="input-group">
@@ -260,7 +261,6 @@
             });
         });
         
-        // 排版完成後，請求 MathJax 重新渲染公式
         if (window.MathJax) {
             MathJax.typesetPromise([container]);
         }
@@ -276,15 +276,27 @@
         let correctCount = 0, perValue = 100 / currentQuestions.length;
         wrongs = [];
         let reviewHTML = '<h3>答案解析與訂正</h3>';
+        
         currentQuestions.forEach((q, i) => {
             const isRight = userAnswers[i] === q.a;
-            if(isRight) correctCount++; else wrongs.push(q);
-            reviewHTML += `<div class="review-card" style="border-left: 5px solid ${isRight?'var(--success)':'var(--error)'}">
-                <p><b>Q${i+1}: ${q.q}</b></p>
-                <p style="color:${isRight?'green':'red'}">${isRight?'✅ 正確':'❌ 錯誤'}</p>
-                <p>您的答案：${userAnswers[i]||'未填'} / 正確答案：${q.a}</p>
-            </div>`;
+            if(isRight) {
+                correctCount++;
+            } else {
+                wrongs.push(q);
+            }
+            
+            // 關鍵修改：尋找正確選項的完整文字內容
+            const correctOptionText = q.o.find(opt => opt.trim().startsWith(`(${q.a})`)) || `(${q.a})`;
+
+            reviewHTML += `
+                <div class="review-card" style="border-left: 5px solid ${isRight ? 'var(--success)' : 'var(--error)'}">
+                    <p><b>Q${i+1}: ${q.q}</b></p>
+                    <p style="color:${isRight ? 'green' : 'red'}">${isRight ? '✅ 正確' : '❌ 錯誤'}</p>
+                    <p>您的答案：<span style="font-weight:bold">${userAnswers[i] || '未填'}</span></p>
+                    <p style="color:var(--success); font-weight:bold;">正確選項：${correctOptionText}</p>
+                </div>`;
         });
+
         const score = Math.round(correctCount * perValue);
         updateScoreUI(score);
         if (isAdmin) document.getElementById('admin-tools').classList.remove('hidden');
@@ -294,7 +306,6 @@
         const reviewArea = document.getElementById('review-area');
         reviewArea.innerHTML = reviewHTML;
         
-        // 渲染結算報告中的數學公式
         if (window.MathJax) {
             MathJax.typesetPromise([reviewArea]);
         }
