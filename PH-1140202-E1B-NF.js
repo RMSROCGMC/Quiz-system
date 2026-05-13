@@ -1,7 +1,7 @@
 window.currentQuiz = {
   name: "物理：必考公式模擬測驗 (25分鐘)",
-  code: "PH-1140202-E1B-NF",
-  timeLimit: 25,
+  mode: 4,
+  time: 25,
   questions: [
     {
       q: "電流 $I = ？$",
