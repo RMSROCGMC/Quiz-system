@@ -1,6 +1,6 @@
 // EN_NEW_NOTE_001 英文科：L3-L4 核心語法 - 專業版 (40分鐘)
 window.currentQuiz = {
-    name: "英文：L3-L4 核心語法 AI題測",
+    name: "英文：L3-L4題測",
     mode: 4,
     time: 40,
     data: [
