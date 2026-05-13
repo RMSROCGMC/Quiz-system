@@ -1,130 +1,83 @@
+// EN-1140202 英文科 L3-L4 複習測驗 - 模式 4 (25分鐘)
 window.currentQuiz = {
-    name: "英文 L3-L4 全範圍題庫 (35分鐘)",
-    code: "EN-L3L4-Full",
-    timeLimit: 35,
-    questions: [
-        // --- Unit 3: Making the Most of Our Flaws ---
-        {
-            q: "The shop sells 'imperfect' goods, which means the items have some ______.",
-            a: ["flaws", "flowers", "flavors", "fans"],
-            c: 0,
-            tip: "imperfect 與 flaw (瑕疵) 是課文核心單字。"
+    name: "英文：L3-L4 複習測驗",
+    mode: 4,
+    time: 25,
+    data: [
+        { 
+            q: "Anne's ______ is that she is always late for school.", 
+            o: ["(A) paths", "(B) flaws", "(C) apologies", "(D) cracks"], 
+            a: "B" 
         },
-        {
-            q: "Helen Keller was ______ and deaf, but she never gave up.",
-            a: ["blind", "brave", "bright", "bitter"],
-            c: 0,
-            tip: "海倫凱勒自幼失明 (blind) 且失聰。"
+        { 
+            q: "My ______ opinion is that this novel is very well written.", 
+            o: ["(A) honest", "(B) delicious", "(C) proper", "(D) damaged"], 
+            a: "A" 
         },
-        {
-            q: "Annie Sullivan, ______ was a great teacher, helped Helen communicate.",
-            a: ["who", "which", "where", "what"],
-            c: 0,
-            tip: "先行詞是人 (Annie Sullivan)，關係代名詞用 who。"
+        { 
+            q: "Ken went to bed early last night, ______ he didn't oversleep again today.", 
+            o: ["(A) but", "(B) although", "(C) so", "(D) because"], 
+            a: "C" 
         },
-        {
-            q: "Ancient Greeks put candles on cakes to ______ the moon goddess, Artemis.",
-            a: ["honor", "hit", "hide", "hurt"],
-            c: 0,
-            tip: "放蠟燭是為了向女神表示敬意 (honor)。"
+        { 
+            q: "In Japan, eating loudly means you think the food is very tasty. Koreans, ______, are quiet at meal times.", 
+            o: ["(A) for example", "(B) however", "(C) thus", "(D) such as"], 
+            a: "B" 
         },
-        {
-            q: "The smoke from the candles was believed to carry ______ to the gods.",
-            a: ["prayers", "presents", "prices", "plates"],
-            c: 0,
-            tip: "古希臘人相信煙能傳達祈禱 (prayers)。"
+        { 
+            q: "The custom in India is ______ the right hand to eat.", 
+            o: ["(A) use", "(B) uses", "(C) used", "(D) to use"], 
+            a: "D" 
         },
-        // --- Unit 4: You Are 'Where' You Eat ---
-        {
-            q: "In Japan, making noise while eating noodles is a way to ______ the chef.",
-            a: ["compliment", "complain", "comfort", "compare"],
-            c: 0,
-            tip: "發出聲音是稱讚 (compliment) 廚師做得好吃。"
+        { 
+            q: "______ his father, Eddie also loves all kinds of music.", 
+            o: ["(A) Unlike", "(B) Dislike", "(C) Like", "(D) Likely"], 
+            a: "C" 
         },
-        {
-            q: "In India, you should only use your ______ hand to eat.",
-            a: ["right", "left", "both", "neither"],
-            c: 0,
-            tip: "文化上認為左手不潔，必須用右手進食。"
+        { 
+            q: "What does the slogan 'Imperfect Goods, Perfect Prices!' mean?", 
+            o: ["(A) You're still perfect.", "(B) Perfect for imperfect people.", "(C) Slightly flawed, but greatly discounted.", "(D) Only perfect goods have good prices."], 
+            a: "C" 
         },
-        {
-            q: "The expression 'Bon appétit' originally comes from ______.",
-            a: ["French", "English", "Japanese", "Greek"],
-            c: 0,
-            tip: "這是法語，意思是祝你胃口好。"
+        { 
+            q: "What does 'Annie finally got through to her' mean?", 
+            o: ["(A) Annie caught up to Helen.", "(B) Helen was saved.", "(C) Annie's intentions were finally understood.", "(D) Annie could see through Helen."], 
+            a: "C" 
         },
-        {
-            q: "Using the ______ hand to give things to others is rude in India.",
-            a: ["left", "right", "clean", "large"],
-            c: 0,
-            tip: "印度文化中，左手被視為 dirty，不可用來遞物。"
+        { 
+            q: "Bill is ______ as the best student in my class because he works hard.", 
+            o: ["(A) recorded", "(B) puzzled", "(C) included", "(D) regarded"], 
+            a: "D" 
         },
-        {
-            q: "Before a meal, people in ______ say 'Itadakimasu'.",
-            a: ["Japan", "India", "France", "Greece"],
-            c: 0,
-            tip: "這是日本用餐前的禮儀用語。"
+        { 
+            q: "Ian is ______ any taxi which may be passing by right now.", 
+            o: ["(A) keeping an eye out for", "(B) making ends meet", "(C) paying off", "(D) taking action"], 
+            a: "A" 
         },
-        // --- Grammar & Mix ---
-        {
-            q: "This laptop is ______ than that one.",
-            a: ["thinner", "more thin", "thinnest", "the thinnest"],
-            c: 0,
-            tip: "短音節單字比較級直接加 -er。"
+        { 
+            q: "The shop sells 'imperfect' goods, which means the items have some ______.", 
+            o: ["(A) flowers", "(B) flaws", "(C) flavors", "(D) fans"], 
+            a: "B" 
         },
-        {
-            q: "The story ______ he told us was very moving.",
-            a: ["which", "who", "where", "whose"],
-            c: 0,
-            tip: "先行詞是物 (The story)，用 which。"
+        { 
+            q: "Ancient Greeks put candles on cakes to ______ the moon goddess, Artemis.", 
+            o: ["(A) honor", "(B) hide", "(C) hit", "(D) hurt"], 
+            a: "A" 
         },
-        {
-            q: "Health is ______ than money.",
-            a: ["more important", "important", "importanter", "the most important"],
-            c: 0,
-            tip: "多音節單字比較級用 more + 原級。"
+        { 
+            q: "The smoke from the candles was believed to carry ______ to the gods.", 
+            o: ["(A) presents", "(B) prayers", "(C) prices", "(D) plates"], 
+            a: "B" 
         },
-        {
-            q: "A person ______ cannot hear anything is called 'deaf'.",
-            a: ["who", "which", "where", "when"],
-            c: 0,
-            tip: "形容人時，關係代名詞用 who。"
+        { 
+            q: "In India, you should avoid using your ______ hand to give things to others.", 
+            o: ["(A) right", "(B) clean", "(C) left", "(D) strong"], 
+            a: "C" 
         },
-        {
-            q: "That movie is the ______ one I have ever seen.",
-            a: ["most exciting", "more exciting", "exciting", "excited"],
-            c: 0,
-            tip: "有 the 且範圍是 'ever seen'，用最高級。"
-        },
-        {
-            q: "Wendy is ______ than any other student in her class.",
-            a: ["smarter", "smartest", "the smartest", "smart"],
-            c: 0,
-            tip: "比較級 + than any other... 是比較級的常見句型。"
-        },
-        {
-            q: "The restaurant ______ we visited yesterday was very clean.",
-            a: ["which", "who", "when", "what"],
-            c: 0,
-            tip: "先行詞是餐廳 (物/地點)，這裡作為 visited 的受格用 which。"
-        },
-        {
-            q: "People in France often ______ each other on the cheeks.",
-            a: ["kiss", "kick", "kill", "keep"],
-            c: 0,
-            tip: "法國人的社交禮儀是親吻臉頰。"
-        },
-        {
-            q: "The slogan says, 'Imperfect goods, ______ prices!'",
-            a: ["perfect", "poor", "painful", "public"],
-            c: 0,
-            tip: "課文廣告標語：不完美的商品，完美的(便宜)價格。"
-        },
-        {
-            q: "To make the most of our flaws, we should learn to ______ ourselves.",
-            a: ["accept", "avoid", "attack", "act"],
-            c: 0,
-            tip: "面對瑕疵，我們應該學習接納 (accept) 自己。"
+        { 
+            q: "This laptop is ______ than the one I bought last year.", 
+            o: ["(A) thinner", "(B) more thin", "(C) thinnest", "(D) the thinnest"], 
+            a: "A" 
         }
     ]
 };
