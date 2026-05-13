@@ -1,8 +1,8 @@
 // EN_NEW_NOTE_001 英文科：L3-L4 課本實戰原題版 (40分鐘)
 window.currentQuiz = {
-    name: "英文：L3-L4原題題測",
+    name: "英文：L3-L4 原題題測",
     mode: 4,
-    pasaword:"1111",
+    password: "1111",
     time: 40,
     data: [
         // --- Lesson 3: Making the Most of Our Flaws ---
