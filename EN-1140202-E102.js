@@ -2,7 +2,6 @@
 window.currentQuiz = {
     name: "物理：Ch11-Ch12 課本題庫重新編號版",
     mode: 4,
-    password: "tkmswap2",
     time: 40,
     data: [
         // ====== 第一部分：第 11 章 靜電學 ======
