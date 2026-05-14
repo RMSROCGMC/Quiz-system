@@ -1,214 +1,45 @@
-// EN_NEW_NOTE_001 英文科：L3-L4 課本實戰原題版 (40分鐘)
+// PH_FINAL_CHOICE 物理科：第11-12章 課本原題 100% 全收錄版
 window.currentQuiz = {
-    name: "英文：L3-L4 原題題測",
+    name: "物理：Ch11-Ch12 課本題庫重新編號版",
     mode: 4,
-    password: "1111",
+    password: "tkmswap2",
     time: 40,
     data: [
-        // --- Lesson 3: Making the Most of Our Flaws ---
-        {
-            q: "Jerry looked ______ the window and saw his friends, Sarah and William.",
-            o: ["(A) in", "(B) at", "(C) through", "(D) out of"],
-            a: "D"
-        },
-        {
-            q: "The boy looked ______ when the dentist asked him to open his mouth.",
-            o: ["(A) to scare", "(B) scare", "(C) scared", "(D) scary"],
-            a: "C"
-        },
-        {
-            q: "Blue, green, and pink are the three colors that ______ people feel relaxed.",
-            o: ["(A) make", "(B) making", "(C) makes", "(D) to make"],
-            a: "A"
-        },
-        {
-            q: "The prices of vegetables and fruits are likely to ______ again after the typhoon.",
-            o: ["(A) rising", "(B) rise", "(C) rose", "(D) to rise"],
-            a: "B"
-        },
-        {
-            q: "People are wondering ______ the next president.",
-            o: ["(A) who will be", "(B) will be who", "(C) what will be", "(D) will be what"],
-            a: "A"
-        },
-        {
-            q: "I can't remember ______ I bought this book.",
-            o: ["(A) what", "(B) who", "(C) when", "(D) where"],
-            a: "C"
-        },
-        {
-            q: "Could you please tell me ______?",
-            o: ["(A) how can I get to the station", "(B) how I can get to the station", "(C) the station how I get to", "(D) to the station how can I get"],
-            a: "B"
-        },
-        {
-            q: "The teacher asked the student ______.",
-            o: ["(A) why was he late", "(B) why he was late", "(C) why late he was", "(D) he was late why"],
-            a: "B"
-        },
-        {
-            q: "Do you have any idea ______?",
-            o: ["(A) what time does the shop open", "(B) the shop opens what time", "(C) what time the shop opens", "(D) opens the shop what time"],
-            a: "C"
-        },
-        {
-            q: "As Alex was getting out of the taxi, it ______ to rain.",
-            o: ["(A) because", "(B) since", "(C) started", "(D) although"],
-            a: "C"
-        },
-        {
-            q: "Tonight is movie night, ______ my friends and I will watch horror movies together.",
-            o: ["(A) while", "(B) so", "(C) although", "(D) but"],
-            a: "B"
-        },
-        {
-            q: "The movie is interesting, touching, and ______.",
-            o: ["(A) excitingly", "(B) excitement", "(C) excited", "(D) exciting"],
-            a: "D"
-        },
-        {
-            q: "The painting you bought is ______ beautiful!",
-            o: ["(A) so", "(B) much", "(C) very", "(D) such"],
-            a: "A"
-        },
+        // ====== 第一部分：第 11 章 靜電學 ======
+        { q: "1. 下列何者是摩擦起電的現象？", o: ["(A) 在乾燥的冬天脫下毛衣會聽到嗶啪聲", "(B) 磁鐵吸引迴紋針", "(C) 磁浮列車可浮在軌道上加速前進", "(D) 利用變壓器升降電壓"], a: "A" },
+        { q: "2. 關於庫侖定律的敘述，下列何者正確？", o: ["(A) 靜電力大小與電量乘積成反比", "(B) 靜電力大小與電量乘積成正比", "(C) 靜電力大小與距離成正比", "(D) 靜電力大小與距離平方成正比"], a: "B" },
+        { q: "3. 兩點電荷引力原為 F，若電量皆變為 3 倍且距離不變，則引力變為多少？", o: ["(A) 3F", "(B) 6F", "(C) 9F", "(D) 18F"], a: "C" },
+        { q: "4. 下列關於電力線的描述，何者「錯誤」？", o: ["(A) 由法拉第所創立", "(B) 電力線不會相交", "(C) 電力線代表電荷的運動軌跡", "(D) 電力線密度可推論電場強度"], a: "C" },
+        { q: "5. 如圖所示（6011.jpg），電力線由 a 指向 b 且 a 處較密集，下列何者正確？", o: ["(A) a、b 為異性電荷，a 電量 > b", "(B) a、b 為異性電荷，a 電量 < b", "(C) a、b 為同性電荷", "(D) 無法判斷"], a: "A" },
+        { q: "6. 負電荷粒子射入外加電場，受力向上偏轉，則電場方向為何？", o: ["(A) ↓", "(B) ↑", "(C) →", "(D) ←"], a: "A" },
+        { q: "7. 兩點電荷距離增為 3 倍，電量皆增為 3 倍，則系統電位能將變為幾倍？", o: ["(A) 3 倍", "(B) 6 倍", "(C) 9 倍", "(D) 27 倍"], a: "A" },
+        { q: "8. 正三角形頂點放置 +2Q, -Q, -3Q，邊長為 a，系統總電位能為何？", o: ["(A) -KQ^2/a", "(B) KQ^2/a", "(C) -5KQ^2/a", "(D) 5KQ^2/a"], a: "C" },
+        { q: "9. 均勻電場中，將 +2 庫侖電荷由 A(100V) 移至 B(50V)，外力作功多少焦耳？", o: ["(A) -100", "(B) 100", "(C) -200", "(D) 200"], a: "A" },
+        { q: "10. 平行電容器電容值 0.0005 F，接於 120V 電壓，其電荷量值為何？", o: ["(A) 60", "(B) 6", "(C) 0.6", "(D) 0.06"], a: "D" },
+        { q: "11. 平行電容板電容值 8x10^-6 F，接於 120V 電壓，其儲存電荷量為何？", o: ["(A) 1.92x10^-3", "(B) 9.6x10^-4", "(C) 1.5x10^7", "(D) 1.5x10^-7"], a: "B" },
 
-        // --- Lesson 4: You Are "Where" You Eat ---
-        {
-            q: "Fried vegetable chips are not necessarily ______ than potato chips.",
-            o: ["(A) healthy", "(B) healthier", "(C) as healthy", "(D) the healthiest"],
-            a: "B"
-        },
-        {
-            q: "To pass the final exam, you will need to study ______ than before.",
-            o: ["(A) more harder", "(B) much harder", "(C) more hard", "(D) very hard"],
-            a: "B"
-        },
-        {
-            q: "Jade Mountain is higher than ______ mountain in Taiwan.",
-            o: ["(A) any other", "(B) all the", "(C) other", "(D) another"],
-            a: "A"
-        },
-        {
-            q: "Of all the students in the class, Eva works ______.",
-            o: ["(A) much harder", "(B) the harder", "(C) the hardest", "(D) the most hard"],
-            a: "C"
-        },
-        {
-            q: "Which is the ______ bird in the world?",
-            o: ["(A) a much large", "(B) a larger", "(C) the largest", "(D) the most large"],
-            a: "C"
-        },
-        {
-            q: "Edward has made ______ friends during his stay in Germany.",
-            o: ["(A) a few", "(B) few", "(C) a little", "(D) little"],
-            a: "A"
-        },
-        {
-            q: "I don't have ______ money in my pocket, so I can't buy the drink.",
-            o: ["(A) many", "(B) few", "(C) much", "(D) a few"],
-            a: "C"
-        },
-        {
-            q: "There is ______ water left in the bottle. Go buy some.",
-            o: ["(A) a few", "(B) few", "(C) a little", "(D) little"],
-            a: "D"
-        },
-        {
-            q: "Some people spend their free time on social media, ______ others prefer outdoor activities.",
-            o: ["(A) while", "(B) if", "(C) so", "(D) or"],
-            a: "A"
-        },
-        {
-            q: "The north of the country is like a hot oven, ______ in the south it often rains heavily.",
-            o: ["(A) if", "(B) while", "(C) so", "(D) because"],
-            a: "B"
-        },
-        {
-            q: "When it comes to ______, my brother is much better than me.",
-            o: ["(A) swims", "(B) swam", "(C) swum", "(D) swimming"],
-            a: "D"
-        },
-        {
-            q: "I've been to many countries: Japan, South Korea, and Greece, to ______.",
-            o: ["(A) for example", "(B) such as", "(C) name a few", "(D) like"],
-            a: "C"
-        },
-        {
-            q: "You can manage your time by, ______, recording what you do every day.",
-            o: ["(A) for example", "(B) such as", "(C) for example like", "(D) such like"],
-            a: "A"
-        },
+        // ====== 第二部分：第 12 章 電流與電功率 ======
+        { q: "12. 電流 10 安培，在 T 秒內通過截面電量 40 庫侖，則 T 為多少秒？", o: ["(A) 400", "(B) 40", "(C) 4", "(D) 0.4"], a: "C" },
+        { q: "13. 下列何者「不是」影響導線電阻的因素？", o: ["(A) 導線顏色", "(B) 導線材質", "(C) 導線長度", "(D) 截面積"], a: "A" },
+        { q: "14. 符合歐姆定律，10V 時電流 5A，則電壓為 20V 時電流為多少安培？", o: ["(A) 5", "(B) 10", "(C) 15", "(D) 20"], a: "B" },
+        { q: "15. 3 歐姆與 6 歐姆電阻串聯，接 9V 電池，則通過電池的電流為何？", o: ["(A) 0.5A", "(B) 1.0A", "(C) 1.5A", "(D) 2.0A"], a: "B" },
+        { q: "16. 兩個 5 歐姆電阻並聯，接 1.5V 電壓，則通過電池的總電流為何？", o: ["(A) 7.5A", "(B) 0.3A", "(C) 0.6A", "(D) 15A"], a: "C" },
+        { q: "17. 承上題，電池提供的總電功率為何？", o: ["(A) 0.3W", "(B) 0.45W", "(C) 0.6W", "(D) 0.9W"], a: "D" },
+        { q: "18. 小夜燈規格為 5V, 5W，則其電阻為多少歐姆？", o: ["(A) 1", "(B) 5", "(C) 25", "(D) 125"], a: "B" },
+        { q: "19. 功率 3 kW 的冷氣運轉 20 分鐘，消耗能量多少焦耳？", o: ["(A) 60", "(B) 3.6x10^3", "(C) 6x10^4", "(D) 3.6x10^6"], a: "D" },
+        { q: "20. 下列何者「不是」利用電流熱效應設計的？", o: ["(A) 吹風機", "(B) 烤箱", "(C) 電熱水器", "(D) 微波爐"], a: "D" },
+        { q: "21. 核二廠裝置容量 1970 MW，運轉 1 小時產電可供幾戶家庭使用 1 個月？", o: ["(A) 6", "(B) 3.5x10^3", "(C) 6.5", "(D) 6.5x10^3"], a: "D" },
 
-        // --- Additional Textbook Exercises ---
-        {
-            q: "The cake Mom made for me ______ really good.",
-            o: ["(A) tasted", "(B) sounded", "(C) looked like", "(D) felt"],
-            a: "A"
-        },
-        {
-            q: "I have ______ idea what he is talking about.",
-            o: ["(A) few", "(B) little", "(C) no", "(D) any"],
-            a: "C"
-        },
-        {
-            q: "This cell phone is as ______ as that one, but it's much cheaper.",
-            o: ["(A) good", "(B) better", "(C) best", "(D) well"],
-            a: "A"
-        },
-        {
-            q: "Learning a new language is ______ interesting than playing video games.",
-            o: ["(A) very", "(B) more", "(C) most", "(D) the more"],
-            a: "B"
-        },
-        {
-            q: "This is the ______ delicious pizza I have ever had.",
-            o: ["(A) more", "(B) most", "(C) much", "(D) very"],
-            a: "B"
-        },
-        {
-            q: "The music sounded so ______ that I fell asleep immediately.",
-            o: ["(A) peaceful", "(B) peacefully", "(C) peace", "(D) to be peaceful"],
-            a: "A"
-        },
-        {
-            q: "The students walked ______ into the classroom because they were late.",
-            o: ["(A) quiet", "(B) quietly", "(C) more quiet", "(D) quietest"],
-            a: "B"
-        },
-        {
-            q: "______ of the books on the desk are yours?",
-            o: ["(A) Which", "(B) Who", "(C) What", "(D) How"],
-            a: "A"
-        },
-        {
-            q: "Very ______ people live in this old apartment; it's almost empty.",
-            o: ["(A) a few", "(B) few", "(C) a little", "(D) little"],
-            a: "B"
-        },
-        {
-            q: "It's ______ to be rainy tomorrow, so don't forget your umbrella.",
-            o: ["(A) likely", "(B) possibly", "(C) maybe", "(D) probably"],
-            a: "A"
-        },
-        {
-            q: "When ______ is mentioned, people often think of spicy food.",
-            o: ["(A) Thailand", "(B) Thai", "(C) Thais", "(D) Thailand's"],
-            a: "A"
-        },
-        {
-            q: "There are many things to do here, ______ hiking and swimming.",
-            o: ["(A) for example", "(B) such as", "(C) such like", "(D) as"],
-            a: "B"
-        },
-        {
-            q: "Taiwan is famous for its night markets, ______ to name a few.",
-            o: ["(A) such as", "(B) Shilin and Fengjia", "(C) Shilin and Fengjia, to name a few", "(D) for example Shilin"],
-            a: "C"
-        },
-        {
-            q: "I was ______ when I heard the news.",
-            o: ["(A) surprise", "(B) surprising", "(C) surprised", "(D) to surprise"],
-            a: "C"
-        }
+        // ====== 第三部分：綜合評量測驗 ======
+        { q: "22. 導線在 30 秒內通過截面電量 60 庫侖，電流是多少安培？", o: ["(A) 2", "(B) 30", "(C) 120", "(D) 180"], a: "A" },
+        { q: "23. 兩個 20 歐姆電阻「串聯」接於 10V 電源，等效總電阻為何？", o: ["(A) 0.1", "(B) 10", "(C) 20", "(D) 40"], a: "D" },
+        { q: "24. 承上題（串聯），其中一個電阻的跨壓是多少伏特？", o: ["(A) 20", "(B) 10", "(C) 5", "(D) 2"], a: "C" },
+        { q: "25. 兩個 20 歐姆電阻「並聯」接於 10V 電源，等效總電阻為何？", o: ["(A) 0.1", "(B) 10", "(C) 20", "(D) 40"], a: "B" },
+        { q: "26. 承上題（並聯），流經電池的總電流為多少安培？", o: ["(A) 0.25", "(B) 0.5", "(C) 1", "(D) 4"], a: "C" },
+        { q: "27. 電路圖中 V1=200V, V2=50V, V3=100V，電阻為 5Ω 與 10Ω，求電流 I？", o: ["(A) 40A", "(B) 20A", "(C) 10A", "(D) 5A"], a: "C" },
+        { q: "28. 插座上限 15A(110V)，哪組電器組合最安全？(電鍋880W, 烤箱1210W, 電磁爐990W, 烤麵包機660W)", o: ["(A) 電鍋與烤箱", "(B) 烤箱與電磁爐", "(C) 電鍋與烤麵包機", "(D) 電磁爐與電鍋"], a: "C" },
+        { q: "29. 以下電器中運用「熱效應」的有幾樣？(電視, 冰箱, 熱水器, 電熨斗, 電鍋, 風扇, 吹風機, 電磁爐)", o: ["(A) 4 樣", "(B) 5 樣", "(C) 6 樣", "(D) 7 樣"], a: "A" },
+        { q: "30. 50 支 40W 燈管，開啟一小時消耗幾度電？", o: ["(A) 0.04", "(B) 0.4", "(C) 0.2", "(D) 2"], a: "D" },
+        { q: "31. 已知 1 度電能相當於多少焦耳的能量？", o: ["(A) 3.6x10^3", "(B) 3.6x10^4", "(C) 3.6x10^5", "(D) 3.6x10^6"], a: "D" }
     ]
 };
