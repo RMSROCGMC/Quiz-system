@@ -2,6 +2,7 @@
 window.currentQuiz = {
     name: "物理：必考公式模擬測驗",
     mode: 4,
+    password: "981103",
     time: 25,
     data: [
         { 
