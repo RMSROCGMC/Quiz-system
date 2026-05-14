@@ -2,7 +2,7 @@
 window.currentQuiz = {
     name: "物理：Ch11-Ch12線上模擬測驗",
     mode: 4,
-    password: "1111",
+    password: "981103",
     time: 40,
     data: [
         // --- 第 11 章 靜電學 ---
