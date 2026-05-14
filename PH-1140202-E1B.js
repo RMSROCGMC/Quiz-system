@@ -1,6 +1,6 @@
 // PH_FULL_NOTE 物理科：第11-12章 課本原題 100% 完整轉錄版
 window.currentQuiz = {
-    name: "物理：Ch11-Ch12 課本全原題測驗",
+    name: "物理：Ch11-Ch12線上模擬測驗",
     mode: 4,
     password: "1111",
     time: 40,
