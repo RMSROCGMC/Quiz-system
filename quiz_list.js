@@ -14,5 +14,10 @@ window.allQuizzes = [
   { 
     name: "物理必考公式測驗", 
     code: "PH-1140202-E1B-NF" 
-  }
+  },
+  {
+    name:"基本電學測試版題測版本1",
+    code:"BE-1140203Version1"
+  } 
+  
 ];
