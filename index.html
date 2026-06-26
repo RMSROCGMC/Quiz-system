@@ -3,172 +3,542 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>跨學科數據測驗系統</title>
-    
-    <script>
-        window.MathJax = {
-            tex: { inlineMath: [['$', '$']], displayMath: [['$$', '$$']], processEscapes: true },
-            options: { skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre'] }
-        };
-    </script>
-    <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" async></script>
-    
+    <title>英文句型練習 L5-L6 數位線上考卷</title>
     <style>
-        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; --bg: #f4f7f6; }
-        body { font-family: "Microsoft JhengHei", sans-serif; background: var(--bg); margin: 0; padding: 15px; user-select: none; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); text-align: center; }
-        .code-input { width: 90%; padding: 12px; font-size: 1.1em; text-align: center; border: 2px solid #ddd; border-radius: 8px; margin-bottom: 10px; }
-        .main-btn { width: 100%; padding: 15px; border: none; border-radius: 8px; font-size: 1.2em; cursor: pointer; color: white; font-weight: bold; transition: 0.3s; margin-top: 10px; }
-        .hidden { display: none; }
-        .question-card { text-align: left; padding: 15px; border: 1px solid #eee; border-radius: 10px; margin-bottom: 15px; background: #fff; }
-        .opt-btn { width: 100%; padding: 12px; margin: 5px 0; border: 1px solid #ccc; border-radius: 6px; background: #fff; text-align: left; cursor: pointer; }
-        .opt-btn.selected { background: var(--secondary); color: white; border-color: var(--secondary); }
-        .review-card { text-align: left; border-left: 5px solid #eee; padding: 15px; margin-bottom: 15px; background: #fafafa; }
-        #timer-box { font-size: 1.1em; color: var(--error); font-weight: bold; background: #fff0f0; padding: 5px 10px; border-radius: 5px; border: 1px solid var(--error); }
+        body {
+            font-family: "Times New Roman", Times, "Noto Sans TC", "Microsoft JhengHei", serif;
+            background-color: #f0f2f5;
+            color: #111;
+            margin: 0;
+            padding: 40px 20px;
+        }
+        
+        /* 密碼畫面樣式 */
+        #authScreen {
+            max-width: 400px;
+            background: #fff;
+            margin: 100px auto;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        #authScreen input {
+            width: 80%;
+            padding: 10px;
+            font-size: 1.1em;
+            margin: 15px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            text-align: center;
+        }
+        #authScreen button {
+            background-color: #2c3e50;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1em;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* 試卷主體樣式 (PDF 紙本質感) */
+        #quizScreen {
+            display: none;
+            max-width: 820px;
+            background: #fff;
+            margin: 0 auto;
+            padding: 50px 60px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            box-sizing: border-box;
+            position: relative;
+        }
+        .paper-header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #000;
+            padding-bottom: 15px;
+        }
+        .paper-header h1 {
+            margin: 0 0 10px 0;
+            font-size: 1.8em;
+            letter-spacing: 2px;
+        }
+        .info-bar {
+            display: flex;
+            justify-content: space-between;
+            font-size: 1em;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .section-title {
+            font-size: 1.1em;
+            font-weight: bold;
+            margin: 25px 0 15px 0;
+            text-decoration: underline;
+        }
+        .question {
+            margin-bottom: 20px;
+            font-size: 1.05em;
+            line-height: 1.7;
+            padding: 5px 10px;
+            border-radius: 4px;
+        }
+        .hint {
+            color: #555;
+            font-size: 0.95em;
+            margin: 5px 0 5px 20px;
+        }
+        
+        /* 填充欄位與選擇鈕 */
+        input[type="text"] {
+            border: none;
+            border-bottom: 1px solid #000;
+            padding: 2px 5px;
+            font-size: 1em;
+            font-family: inherit;
+            background: transparent;
+            color: #000;
+        }
+        input[type="text"]:focus {
+            outline: none;
+            border-bottom: 2px solid #2980b9;
+        }
+        .options-group {
+            margin-left: 25px;
+            margin-top: 5px;
+        }
+        .option-label {
+            display: inline-block;
+            margin-right: 25px;
+            cursor: pointer;
+        }
+        
+        /* 功能按鈕區 */
+        .action-container {
+            margin-top: 40px;
+            border-top: 1px dashed #ccc;
+            padding-top: 25px;
+            text-align: center;
+        }
+        .btn {
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 1.05em;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+            font-weight: bold;
+        }
+        .btn-submit { background-color: #2c3e50; }
+        .btn-retry { background-color: #e67e22; display: none; }
+        
+        /* 批改狀態顏色 */
+        .wrong-active {
+            border-left: 4px solid #e74c3c;
+            background-color: #fdf2f2;
+        }
+        .correct-active {
+            border-left: 4px solid #2ecc71;
+            background-color: #f4fbf7;
+        }
+        .score-board {
+            display: none;
+            text-align: center;
+            font-size: 1.4em;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 15px;
+            border: 2px solid #2c3e50;
+            border-radius: 6px;
+        }
     </style>
 </head>
-<body oncontextmenu="return false">
+<body>
 
-<div class="container">
-    <div id="login-screen">
-        <h2>模擬題測系統</h2>
-        <div class="input-group">
-            <input type="text" id="user-name" class="code-input" placeholder="考生姓名">
-            <input type="text" id="quiz-code" class="code-input" placeholder="請輸入代碼 (例: test01)">
-            <div id="password-area" class="hidden">
-                <input type="password" id="quiz-pass" class="code-input" placeholder="輸入題庫密碼">
+<div id="authScreen">
+    <h2>請輸入測驗密碼</h2>
+    <input type="password" id="quizPassword" placeholder="請輸入密碼">
+    <br>
+    <button onclick="verifyPassword()">進入考卷</button>
+</div>
+
+<div id="quizScreen">
+    <div class="paper-header">
+        <h1>英文句型練習 L5-L6 數位檢定測驗</h1>
+        <div class="info-bar">
+            <span>班級：____________</span>
+            <span>座號：______</span>
+            <span>姓名：____________</span>
+            <span id="scoreDisplay" style="color: #c0392b;">得分：_______</span>
+        </div>
+    </div>
+    
+    <form id="quizForm">
+        <div class="section-title">二、填充 20%（一格 4 分）</div>
+        <div class="question" id="q_t1">
+            1. Jessica 的主意被視為我們當中最好的一個。<br>
+            Jessica's idea <input type="text" data-ans="is" style="width: 50px;"> <input type="text" data-ans="regarded" style="width: 100px;"> <input type="text" data-ans="as" style="width: 50px;"> one of the best among ours.
+        </div>
+        <div class="question" id="q_t2">
+            2. 現在在線上購買一件家具是容易的。<br>
+            It is easy to buy a(n) <input type="text" data-ans="piece" style="width: 80px;"> <input type="text" data-ans="of" style="width: 40px;"> furniture online these days.
+        </div>
+
+        <div class="section-title">三、句型練習 40%（一題 8 分）</div>
+        <div class="question" id="q_t3">
+            1. The Dead Sea / in the world / as / is described / one of the most beautiful places（重組）<br>
+            <input type="text" data-ans="The Dead Sea is described as one of the most beautiful places in the world." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t4">
+            2. It has been / than humans / that bats / reported / have better hearing（重組）<br>
+            <input type="text" data-ans="It has been reported that bats have better hearing than humans" style="width: 95%;">
+        </div>
+        <div class="question" id="q_t5">
+            3. The White House is a building that is famous around the world.<br>
+            <div class="hint">提示：請以 The White House is a... 開頭並以複合形容詞改寫句子。</div>
+            <input type="text" data-ans="The White House is a world-famous building." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t6">
+            4. People say that this necklace is worth millions of dollars.<br>
+            <div class="hint">提示：請以 It... 改寫句子。</div>
+            <input type="text" data-ans="It is said that this necklace is worth millions of dollars." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t7">
+            5. My sister's hair is thirty inches long. <br> My hair is thirty inches long.<br>
+            <div class="hint">提示：請以 My sister's hair 開頭並以 as... as 合併句子。</div>
+            <input type="text" data-ans="My sister's hair is as long as my hair." style="width: 95%;">
+        </div>
+
+        <div class="section-title">二、填充 20%（一格 4 分）</div>
+        <div class="question" id="q_t8">
+            1. 這裡的天氣就像臺北的一樣。<br>
+            The weather here is like <input type="text" data-ans="that" style="width: 70px;"> <input type="text" data-ans="of" style="width: 50px;"> Taipei.
+        </div>
+        <div class="question" id="q_t9">
+            2. 由於人類活動，許多生物不再存在於世界上。<br>
+            Many creatures no longer exist on Earth <input type="text" data-ans="as" style="width: 40px;"> a <input type="text" data-ans="result" style="width: 80px;"> <input type="text" data-ans="of" style="width: 40px;"> human activities.
+        </div>
+
+        <div class="section-title">三、句型練習 40%（一題 8 分）</div>
+        <div class="question" id="q_t10">
+            1. he cares about / at the animal shelter / street animals / Bill volunteers / since（重組）<br>
+            <input type="text" data-ans="Bill volunteers at the animal shelter since he cares about street animals." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t11">
+            2. I have homework to do, so I can't play online games with you.<br>
+            <div class="hint">提示：請以 I have... This is why... 改寫句子。</div>
+            <input type="text" data-ans="I have homework to do. This is why I can't play online games with you." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t12">
+            3. The soup was very hot, and I couldn't eat it.<br>
+            <div class="hint">提示：請以 so... that... 改寫句子。</div>
+            <input type="text" data-ans="The soup was so hot that I couldn't eat it." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t13">
+            4. We are discussing something. Do we want to have a BBQ party?<br>
+            <div class="hint">提示：請以 ... whether... 合併句子。</div>
+            <input type="text" data-ans="We are discussing whether we want to have a BBQ party." style="width: 95%;">
+        </div>
+        <div class="question" id="q_t14">
+            5. It was a crowded train. I could barely move.<br>
+            <div class="hint">提示：請以 such... that... 合併句子。</div>
+            <input type="text" data-ans="It was such a crowded train that I could barely move." style="width: 95%;">
+        </div>
+
+
+        <div class="section-title">句型練習本 L5 一、文法選擇 40%（一題 5 分）</div>
+        
+        <div class="question" id="q_r1">
+            1. The scooter rider was fined ______ breaking a traffic rule.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_1" value="A"> (A) because</label>
+                <label class="option-label"><input type="radio" name="l5_1" value="B"> (B) due to</label>
+                <label class="option-label"><input type="radio" name="l5_1" value="C"> (C) instead of</label>
+                <label class="option-label"><input type="radio" name="l5_1" value="D"> (D) as a result</label>
             </div>
-            <div id="status-msg" style="color:var(--secondary); font-size: 0.85em; margin: 10px 0;">等待讀取伺服器題庫檔案...</div>
         </div>
-        <button id="start-btn" class="main-btn" onclick="checkAndStart()" style="background:#ccc;" disabled>進入測驗</button>
-    </div>
 
-    <div id="quiz-ui" class="hidden">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-            <span id="quiz-header" style="font-weight:bold;">載入中...</span>
-            <div id="timer-box">⏳ <span id="time-left">00:00</span></div>
+        <div class="question" id="q_r2">
+            2. Billy called his wife to ask ______ she needed anything from the supermarket.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_2" value="A"> (A) and</label>
+                <label class="option-label"><input type="radio" name="l5_2" value="B"> (B) if</label>
+                <label class="option-label"><input type="radio" name="l5_2" value="C"> (C) what</label>
+                <label class="option-label"><input type="radio" name="l5_2" value="D"> (D) that</label>
+            </div>
         </div>
-        <div id="quiz-container"></div>
-        <button class="main-btn" style="background:var(--primary);" onclick="confirmSubmit()">提交作答</button>
-    </div>
 
-    <div id="result-screen" class="hidden">
-        <h2>📊 結算報告</h2>
-        <h1 id="final-score" style="font-size: 4em; color:var(--secondary);">0</h1>
-        <p id="pass-status" style="font-weight:bold;"></p>
-        <button class="main-btn" style="background:#95a5a6;" onclick="location.reload()">返回登入</button>
-        <div id="review-area" style="margin-top:20px; border-top:2px solid #ddd; padding-top:15px;"></div>
-    </div>
+        <div class="question" id="q_r3">
+            3. As children grow older, their opinions often become different from ______ of their parents.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_3" value="A"> (A) those</label>
+                <label class="option-label"><input type="radio" name="l5_3" value="B"> (B) that</label>
+                <label class="option-label"><input type="radio" name="l5_3" value="C"> (C) them</label>
+                <label class="option-label"><input type="radio" name="l5_3" value="D"> (D) which</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r4">
+            4. Andrew was ______ shocked that he didn't know how to respond.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_4" value="A"> (A) over</label>
+                <label class="option-label"><input type="radio" name="l5_4" value="B"> (B) too</label>
+                <label class="option-label"><input type="radio" name="l5_4" value="C"> (C) very</label>
+                <label class="option-label"><input type="radio" name="l5_4" value="D"> (D) so</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r5">
+            5. What is your reason ______ studying in a vocational high school?<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_5" value="A"> (A) for</label>
+                <label class="option-label"><input type="radio" name="l5_5" value="B"> (B) to</label>
+                <label class="option-label"><input type="radio" name="l5_5" value="C"> (C) of</label>
+                <label class="option-label"><input type="radio" name="l5_5" value="D"> (D) over</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r6">
+            6. The success of the plan depends on ______ we can find the perfect location.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_6" value="A"> (A) what</label>
+                <label class="option-label"><input type="radio" name="l5_6" value="B"> (B) that</label>
+                <label class="option-label"><input type="radio" name="l5_6" value="C"> (C) whether</label>
+                <label class="option-label"><input type="radio" name="l5_6" value="D"> (D) however</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r7">
+            7. It was ______ great news that I couldn't believe it was true.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_7" value="A"> (A) such a</label>
+                <label class="option-label"><input type="radio" name="l5_7" value="B"> (B) a such</label>
+                <label class="option-label"><input type="radio" name="l5_7" value="C"> (C) such</label>
+                <label class="option-label"><input type="radio" name="l5_7" value="D"> (D) so a</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r8">
+            8. Some Asian girls wear jackets when they walk in the sun. ______ they don't want to get tanned.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l5_8" value="A"> (A) Therefore</label>
+                <label class="option-label"><input type="radio" name="l5_8" value="B"> (B) This is why</label>
+                <label class="option-label"><input type="radio" name="l5_8" value="C"> (C) Due to</label>
+                <label class="option-label"><input type="radio" name="l5_8" value="D"> (D) That is because</label>
+            </div>
+        </div>
+
+        <div class="section-title">句型練習本 L6 一、文法選擇 40%（一題 5 分）</div>
+
+        <div class="question" id="q_r9">
+            1. Ben's mother called him down for dinner as ______ to his friend on the phone.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_1" value="A"> (A) talked</label>
+                <label class="option-label"><input type="radio" name="l6_1" value="B"> (B) to talk</label>
+                <label class="option-label"><input type="radio" name="l6_1" value="C"> (C) he has talked</label>
+                <label class="option-label"><input type="radio" name="l6_1" value="D"> (D) he was talking</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r10">
+            2. The weather report says that this week will be ______ cold ______ last week.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_2" value="A"> (A) as; as</label>
+                <label class="option-label"><input type="radio" name="l6_2" value="B"> (B) more; than</label>
+                <label class="option-label"><input type="radio" name="l6_2" value="C"> (C) so; that</label>
+                <label class="option-label"><input type="radio" name="l6_2" value="D"> (D) such; that</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r11">
+            3. Could you give me ______ on traveling by airplane?<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_3" value="A"> (A) a piece of advice</label>
+                <label class="option-label"><input type="radio" name="l6_3" value="B"> (B) an advice</label>
+                <label class="option-label"><input type="radio" name="l6_3" value="C"> (C) some advices</label>
+                <label class="option-label"><input type="radio" name="l6_3" value="D"> (D) a word of advices</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r12">
+            4. Many hotels have adopted a ______ policy for all indoor areas.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_4" value="A"> (A) free-smoked</label>
+                <label class="option-label"><input type="radio" name="l6_4" value="B"> (B) free-smoke</label>
+                <label class="option-label"><input type="radio" name="l6_4" value="C"> (C) smoked-free</label>
+                <label class="option-label"><input type="radio" name="l6_4" value="D"> (D) smoke-free</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r13">
+            5. It is impossible for me to jump as ______ as Eddie.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_5" value="A"> (A) length</label>
+                <label class="option-label"><input type="radio" name="l6_5" value="B"> (B) far</label>
+                <label class="option-label"><input type="radio" name="l6_5" value="C"> (C) longer</label>
+                <label class="option-label"><input type="radio" name="l6_5" value="D"> (D) further</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r14">
+            6. It ______ that juice is a good source of vitamins, but actually, eating fruits is a much better choice.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_6" value="A"> (A) though</label>
+                <label class="option-label"><input type="radio" name="l6_6" value="B"> (B) thinks</label>
+                <label class="option-label"><input type="radio" name="l6_6" value="C"> (C) is thought</label>
+                <label class="option-label"><input type="radio" name="l6_6" value="D"> (D) is thinking</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r15">
+            7. ______ is reported that the rain will continue until Friday.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_7" value="A"> (A) That</label>
+                <label class="option-label"><input type="radio" name="l6_7" value="B"> (B) It</label>
+                <label class="option-label"><input type="radio" name="l6_7" value="C"> (C) What</label>
+                <label class="option-label"><input type="radio" name="l6_7" value="D"> (D) Which</label>
+            </div>
+        </div>
+
+        <div class="question" id="q_r16">
+            8. Lauren was running back and forth to make her kite fly as ______ as her brother's.<br>
+            <div class="options-group">
+                <label class="option-label"><input type="radio" name="l6_8" value="A"> (A) higher</label>
+                <label class="option-label"><input type="radio" name="l6_8" value="B"> (B) highest</label>
+                <label class="option-label"><input type="radio" name="l6_8" value="C"> (C) high</label>
+                <label class="option-label"><input type="radio" name="l6_8" value="D"> (D) height</label>
+            </div>
+        </div>
+
+        <div class="action-container">
+            <div id="scoreSummary" class="score-board"></div>
+            <button type="button" class="btn btn-submit" id="submitBtn" onclick="gradeQuiz()">交卷並核對答案</button>
+            <button type="button" class="btn btn-retry" id="retryBtn" onclick="prepareRetry()">錯題重新測試</button>
+        </div>
+    </form>
 </div>
 
 <script>
-    let quizActive = false, cheats = 0;
-    let currentQuestions = [], userAnswers = {}, timerInterval, totalSeconds = 0;
+    // 選擇題標準答案對照
+    const radioAnswers = {
+        'l5_1': 'B', 'l5_2': 'B', 'l5_3': 'A', 'l5_4': 'D',
+        'l5_5': 'A', 'l5_6': 'C', 'l5_7': 'A', 'l5_8': 'D',
+        'l6_1': 'D', 'l6_2': 'A', 'l6_3': 'A', 'l6_4': 'D',
+        'l6_5': 'B', 'l6_6': 'C', 'l6_7': 'B', 'l6_8': 'C'
+    };
 
-    // 1. 動態偵測題庫與密碼 (自動適應所有檔案)
-    document.getElementById('quiz-code').addEventListener('input', (e) => {
-        const code = e.target.value.trim();
-        if(code) {
-            const old = document.getElementById('q-script'); if(old) old.remove();
-            const s = document.createElement('script');
-            s.id = 'q-script'; s.src = `${code}.js`; // 對應截圖中的 .js 檔案
-            s.onload = () => {
-                if(window.currentQuiz) {
-                    document.getElementById('status-msg').innerText = `✅ 已讀取：${window.currentQuiz.name}`;
-                    if(window.currentQuiz.password) document.getElementById('password-area').classList.remove('hidden');
-                    document.getElementById('start-btn').disabled = false;
-                    document.getElementById('start-btn').style.background = "var(--success)";
+    let wrongQuestions = [];
+
+    // 密碼驗證
+    function verifyPassword() {
+        const pw = document.getElementById('quizPassword').value;
+        if (pw === '970120-981103') {
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('quizScreen').style.display = 'block';
+        } else {
+            alert('密碼錯誤，拒絕存取！');
+        }
+    }
+
+    // 字串校對清洗 (自動忽略大小寫與標點符號的差異)
+    function cleanString(str) {
+        return str.trim().toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").replace(/\s+/g, ' ');
+    }
+
+    // 交卷批改主程式
+    function gradeQuiz() {
+        wrongQuestions = [];
+        let totalItems = 0;
+        let correctItems = 0;
+
+        // 1. 批改填充題與改寫句
+        const textBlocks = document.querySelectorAll('.question:has(input[type="text"])');
+        textBlocks.forEach(block => {
+            let blockCorrect = true;
+            const inputs = block.querySelectorAll('input[type="text"]');
+            
+            inputs.forEach(input => {
+                totalItems++;
+                const userAns = cleanString(input.value);
+                const targetAns = cleanString(input.getAttribute('data-ans'));
+                
+                if (userAns === targetAns) {
+                    correctItems++;
+                } else {
+                    blockCorrect = false;
                 }
-            };
-            document.head.appendChild(s);
-        }
-    });
-
-    function checkAndStart() {
-        if(!document.getElementById('user-name').value.trim()) return alert("請輸入姓名");
-        if(window.currentQuiz.password && document.getElementById('quiz-pass').value !== window.currentQuiz.password) {
-            return alert("密碼錯誤");
-        }
-        beginQuiz();
-    }
-
-    function beginQuiz() {
-        document.getElementById('login-screen').classList.add('hidden');
-        document.getElementById('quiz-ui').classList.remove('hidden');
-        const quiz = window.currentQuiz;
-        document.getElementById('quiz-header').innerText = quiz.name;
-        
-        // 隨機化處理
-        currentQuestions = JSON.parse(JSON.stringify(quiz.data)).sort(() => Math.random() - 0.5);
-        totalSeconds = (quiz.time || 20) * 60;
-        
-        timerInterval = setInterval(() => {
-            totalSeconds--;
-            const mins = Math.floor(totalSeconds / 60), secs = totalSeconds % 60;
-            document.getElementById('time-left').innerText = `${mins}:${secs.toString().padStart(2,'0')}`;
-            if (totalSeconds <= 0) evalQuiz();
-        }, 1000);
-        quizActive = true;
-        renderQuiz();
-    }
-
-    function renderQuiz() {
-        const container = document.getElementById('quiz-container');
-        container.innerHTML = '';
-        currentQuestions.forEach((q, i) => {
-            const card = document.createElement('div'); card.className = 'question-card';
-            card.innerHTML = `<p><strong>Q${i+1}. ${q.q}</strong></p><div id="opts-${i}"></div>`;
-            container.appendChild(card);
-            
-            q.o.forEach(opt => {
-                const b = document.createElement('button'); b.className = 'opt-btn'; b.innerText = opt;
-                b.onclick = () => {
-                    userAnswers[i] = opt.match(/\(([A-D])\)/)[1];
-                    Array.from(b.parentElement.children).forEach(x => x.classList.remove('selected'));
-                    b.classList.add('selected');
-                };
-                document.getElementById(`opts-${i}`).appendChild(b);
             });
+
+            block.classList.remove('wrong-active', 'correct-active');
+            if (!blockCorrect) {
+                block.classList.add('wrong-active');
+                wrongQuestions.push({type: 'text', id: block.id});
+            } else {
+                block.classList.add('correct-active');
+            }
         });
-        if (window.MathJax) MathJax.typesetPromise([container]);
+
+        // 2. 批改單選選擇題
+        for (let name in radioAnswers) {
+            totalItems++;
+            const questionBlock = document.querySelector(`input[name="${name}"]`).closest('.question');
+            const selected = document.querySelector(`input[name="${name}"]:checked`);
+            
+            questionBlock.classList.remove('wrong-active', 'correct-active');
+            if (selected && selected.value === radioAnswers[name]) {
+                correctItems++;
+                questionBlock.classList.add('correct-active');
+            } else {
+                questionBlock.classList.add('wrong-active');
+                wrongQuestions.push({type: 'radio', name: name, block: questionBlock});
+            }
+        }
+
+        const finalScore = Math.round((correctItems / totalItems) * 100);
+        document.getElementById('scoreDisplay').innerText = `得分：${finalScore} 分`;
+        
+        const summary = document.getElementById('scoreSummary');
+        summary.style.display = 'block';
+        summary.innerHTML = `測驗結束！總得分：${finalScore} 分 / 100 分<br>共計錯題：${wrongQuestions.length} 題`;
+
+        if (wrongQuestions.length > 0) {
+            document.getElementById('retryBtn').style.display = 'inline-block';
+        } else {
+            document.getElementById('retryBtn').style.display = 'none';
+            summary.innerHTML += "<br><span style='color:#2ecc71;'>完美滿分！</span>";
+        }
     }
 
-    function confirmSubmit() { if(confirm("確定提交？")) evalQuiz(); }
+    // 錯題重測機制
+    function prepareRetry() {
+        // 先隱藏所有的題目
+        const allQuestions = document.querySelectorAll('.question');
+        allQuestions.forEach(q => q.style.display = 'none');
 
-    function evalQuiz() {
-        quizActive = false;
-        clearInterval(timerInterval);
-        document.getElementById('quiz-ui').classList.add('hidden');
-        document.getElementById('result-screen').classList.remove('hidden');
-        
-        let correctCount = 0;
-        let reviewHTML = '<h3>🔍 詳細解析 (正確答案已標註)</h3>';
-        
-        currentQuestions.forEach((q, i) => {
-            // 關鍵：從選項數組中找出開頭為正確代號 (A-D) 的內容
-            const correctContent = q.o.find(str => str.trim().startsWith(`(${q.a})`));
-            const isRight = userAnswers[i] === q.a;
-            if(isRight) correctCount++;
-            
-            reviewHTML += `
-                <div class="review-card" style="border-left: 5px solid ${isRight?'var(--success)':'var(--error)'}">
-                    <p><b>Q${i+1}: ${q.q}</b></p>
-                    <p>您的作答：${userAnswers[i]||'未填'} | 
-                    <span style="color:var(--success); font-weight:bold;">正確答案：${correctContent}</span></p>
-                </div>`;
+        // 只把答錯的題目撈出來顯示，並洗掉之前的作答痕跡
+        wrongQuestions.forEach(item => {
+            if (item.type === 'text') {
+                const block = document.getElementById(item.id);
+                block.style.display = 'block';
+                block.classList.remove('wrong-active', 'correct-active');
+                block.querySelectorAll('input[type="text"]').forEach(input => input.value = '');
+            } else if (item.type === 'radio') {
+                item.block.style.display = 'block';
+                item.block.classList.remove('wrong-active', 'correct-active');
+                item.block.querySelectorAll('input[type="radio"]').forEach(radio => radio.checked = false);
+            }
         });
 
-        const score = Math.round(correctCount * (100 / currentQuestions.length));
-        document.getElementById('final-score').innerText = score;
-        document.getElementById('review-area').innerHTML = reviewHTML;
+        // 恢復下方與上方的分數面板狀態
+        document.getElementById('scoreSummary').style.display = 'none';
+        document.getElementById('retryBtn').style.display = 'none';
+        document.getElementById('scoreDisplay').innerText = `得分：_______`;
         
-        const ps = document.getElementById('pass-status');
-        ps.innerText = score >= 60 ? "及格" : "不及格";
-        ps.style.color = score >= 60 ? "green" : "red";
-
-        // 強制再次運行 MathJax 渲染解析區的公式
-        if (window.MathJax) MathJax.typesetPromise([document.getElementById('review-area')]);
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 </script>
+
 </body>
 </html>
